@@ -222,8 +222,8 @@
                 <label for="bookingDatePicker" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--secondary);">
                   <i class="fas fa-calendar-day" style="color: var(--primary); margin-right: 6px;"></i> D. Booking Date:
                 </label>
-                <input type="date" id="bookingDatePicker" class="form-control" style="max-width: 320px; font-weight: 600;" required>
-                <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">* Past dates are strictly disabled</small>
+                <input type="date" id="bookingDatePicker" class="form-control" style="max-width: 320px; font-weight: 600;" required aria-required="true" aria-describedby="datePickerHelp">
+                <small id="datePickerHelp" style="color: var(--text-muted); display: block; margin-top: 0.35rem;">* Past dates are strictly disabled</small>
               </div>
 
               <!-- E: Time Slots -->
@@ -231,17 +231,17 @@
                 <label style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--secondary);">
                   <i class="fas fa-clock" style="color: var(--primary); margin-right: 6px;"></i> E. Available Time Slots:
                 </label>
-                <div class="time-slots-grid">
-                  <div class="slot-pill selected" data-slot="09:00 AM - 11:00 AM">
+                <div class="time-slots-grid" role="group" aria-label="Available appointment time slots">
+                  <div class="slot-pill selected" data-slot="09:00 AM - 11:00 AM" tabindex="0" role="button" aria-pressed="true">
                     <i class="fas fa-sun"></i> 09:00 AM – 11:00 AM
                   </div>
-                  <div class="slot-pill" data-slot="11:30 AM - 01:30 PM">
+                  <div class="slot-pill" data-slot="11:30 AM - 01:30 PM" tabindex="0" role="button" aria-pressed="false">
                     <i class="fas fa-sun"></i> 11:30 AM – 01:30 PM
                   </div>
-                  <div class="slot-pill" data-slot="02:00 PM - 04:00 PM">
+                  <div class="slot-pill" data-slot="02:00 PM - 04:00 PM" tabindex="0" role="button" aria-pressed="false">
                     <i class="fas fa-cloud-sun"></i> 02:00 PM – 04:00 PM
                   </div>
-                  <div class="slot-pill" data-slot="04:30 PM - 06:30 PM">
+                  <div class="slot-pill" data-slot="04:30 PM - 06:30 PM" tabindex="0" role="button" aria-pressed="false">
                     <i class="fas fa-cloud-moon"></i> 04:30 PM – 06:30 PM
                   </div>
                 </div>
@@ -261,22 +261,22 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label for="custFullName">Full Name *</label>
-                  <input type="text" id="custFullName" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                  <input type="text" id="custFullName" class="form-control" placeholder="e.g. Rahul Sharma" autocomplete="name" minlength="2" required aria-required="true">
                 </div>
                 <div class="form-group">
                   <label for="custMobile">Mobile Number *</label>
-                  <input type="tel" id="custMobile" class="form-control" placeholder="10-digit mobile number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                  <input type="tel" id="custMobile" class="form-control" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" inputmode="numeric" autocomplete="tel" title="Please enter a 10-digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required aria-required="true">
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="custAddress">Complete Service Address *</label>
-                <textarea id="custAddress" class="form-control" rows="3" placeholder="Flat / House No., Apartment/Street name, Landmark, City, Pincode" required></textarea>
+                <textarea id="custAddress" class="form-control" rows="3" placeholder="Flat / House No., Apartment/Street name, Landmark, City, Pincode" minlength="8" autocomplete="street-address" required aria-required="true"></textarea>
               </div>
 
               <div class="form-group">
                 <label for="custNotes">Special Instructions (Optional)</label>
-                <textarea id="custNotes" class="form-control" rows="2" placeholder="e.g. Please ring bell twice, pets at home, handle antique mirrors carefully..."></textarea>
+                <textarea id="custNotes" class="form-control" rows="2" maxlength="500" placeholder="e.g. Please ring bell twice, pets at home, handle antique mirrors carefully..." aria-label="Special Instructions"></textarea>
               </div>
             </div>
 
