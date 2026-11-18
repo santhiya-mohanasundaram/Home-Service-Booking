@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Login - TripEase</title>
+  <meta name="description" content="Sign in to your TripEase account to access your bookings, saved trips and exclusive member discounts.">
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="auth-page-wrap">
+    
+    <!-- LEFT VISUAL BRANDING SIDE -->
+    <div class="auth-visual-side">
+      <div>
+        <a href="index.html" class="logo" style="color: #ffffff;">
+          <div class="logo-icon"><i class="fa-solid fa-plane-departure"></i></div>
+          <span>Trip</span><span class="text-orange">Ease</span>
+        </a>
+      </div>
+
+      <div>
+        <span class="badge badge-orange" style="margin-bottom: 1rem;"><i class="fa-solid fa-compass"></i> Seamless Travel Portal</span>
+        <h2 style="font-size: 2.75rem; color: #ffffff; line-height: 1.2; margin-bottom: 1.25rem;">
+          Your Gateway to Unforgettable Adventures
+        </h2>
+        <p style="font-size: 1.1rem; color: #cbd5e1; max-width: 480px; margin-bottom: 2rem;">
+          Log in to manage your itineraries, download boarding vouchers, request trip customizations, and unlock secret loyalty discounts.
+        </p>
+
+        <!-- Customer Endorsement Card -->
+        <div style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); max-width: 460px;">
+          <div style="display: flex; gap: 0.4rem; color: #f59e0b; margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p style="font-size: 0.88rem; color: #f1f5f9; margin-bottom: 0.75rem; font-style: italic;">
+            "Booking our Kashmir family vacation with TripEase was the smoothest travel experience we've ever had. Everything was on schedule!"
+          </p>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 34px; height: 34px; border-radius: 50%; background: #0ea5e9; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
+              AK
+            </div>
+            <div>
+              <strong style="display: block; font-size: 0.85rem; color: #ffffff;">Arvind & Kavita Kumar</strong>
+              <span style="font-size: 0.75rem; color: #94a3b8;">Frequent Travelers, Mumbai</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size: 0.82rem; color: #94a3b8;">
+        &copy; 2026 TripEase Technologies Pvt. Ltd. All rights reserved.
+      </div>
+    </div>
+
+    <!-- RIGHT LOGIN FORM SIDE -->
+    <div class="auth-form-side">
+      <div class="auth-form-container">
+        
+        <!-- Header -->
+        <div class="auth-header">
+          <div style="margin-bottom: 1.5rem;">
+            <a href="index.html" class="btn btn-ghost btn-sm" style="padding-left: 0; color: #64748b;">
+              <i class="fa-solid fa-arrow-left"></i> Back to Homepage
+            </a>
+          </div>
+          <h1 class="auth-title">Welcome Back</h1>
+          <p class="auth-subtitle">Please enter your credentials to access your trips.</p>
+        </div>
+
+        <!-- Social Quick Login -->
+        <div class="social-login-grid">
+          <button type="button" class="social-btn-login" onclick="showToast('Google Sign-In simulated successfully!', 'success'); localStorage.setItem('tripEaseUser', JSON.stringify({name: 'Google User', email: 'user@gmail.com'})); setTimeout(() => window.location.href='index.html', 800);">
+            <i class="fa-brands fa-google text-danger"></i> Google
+          </button>
+          <button type="button" class="social-btn-login" onclick="showToast('Facebook Sign-In simulated!', 'info'); localStorage.setItem('tripEaseUser', JSON.stringify({name: 'Facebook User', email: 'fb@example.com'})); setTimeout(() => window.location.href='index.html', 800);">
+            <i class="fa-brands fa-facebook text-sky"></i> Facebook
+          </button>
+        </div>
+
+        <div class="auth-divider">
+          <span>OR SIGN IN WITH EMAIL</span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Username, Email, or Phone</label>
+            <div style="position: relative;">
+              <input type="text" id="loginEmail" class="form-control" placeholder="e.g. admin or arjun.sharma@example.com" value="arjun.sharma@example.com" required style="padding-left: 2.5rem;">
+              <i class="fa-regular fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="flex-between" style="margin-bottom: 0.4rem;">
+              <label class="form-label" for="loginPassword" style="margin-bottom: 0;">Password</label>
+              <a href="javascript:void(0)" onclick="showToast('Password reset link sent to your email!', 'info')" style="font-size: 0.8rem; color: #0284c7; font-weight: 600;">
+                Forgot Password?
+              </a>
+            </div>
+            <div class="password-input-wrap">
+              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" value="tripease123" required style="padding-left: 2.5rem; padding-right: 2.5rem;">
+              <i class="fa-solid fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+              <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex-between" style="margin-bottom: 1.5rem; font-size: 0.88rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; color: #475569; cursor: pointer;">
+              <input type="checkbox" checked style="accent-color: #ff6b35;">
+              <span>Remember me for 30 days</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Account
+          </button>
+        </form>
+
+        <!-- Switch to Register -->
+        <div style="text-align: center; margin-top: 2rem; font-size: 0.92rem; color: #64748b;">
+          Don't have an account yet? 
+          <a href="register.html" style="color: #ff6b35; font-weight: 700;">Create Account</a>
+        </div>
+
+        <div style="margin-top: 1.5rem; padding: 0.85rem; background: #e0f2fe; border-radius: 8px; font-size: 0.82rem; color: #0369a1; text-align: center;">
+          <i class="fa-solid fa-circle-info"></i> Demo credentials are auto-filled for quick testing.
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
