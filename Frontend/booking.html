@@ -14,10 +14,13 @@
 </head>
 <body>
 
+  <!-- Skip Navigation Link for Accessibility -->
+  <a href="#main-content" class="skip-to-content" style="position: absolute; top: -100px; left: 16px; z-index: 9999; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; border-radius: 4px; transition: top 0.2s;" onfocus="this.style.top='16px'" onblur="this.style.top='-100px'">Skip to main content</a>
+
   <!-- Site Navigation Bar -->
-  <header class="site-header">
+  <header class="site-header" role="banner">
     <div class="container">
-      <nav class="navbar">
+      <nav class="navbar" role="navigation" aria-label="Main Navigation">
         <a href="index.html" class="brand-logo">
           <div class="logo-icon"><i class="fas fa-broom"></i></div>
           <div class="brand-text">Sparkle<span>Home</span></div>
@@ -43,7 +46,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content" role="main">
     <!-- Booking Progress Header -->
     <section style="background: linear-gradient(135deg, #f0fdf9 0%, #e0f2fe 100%); padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border-color);">
       <div class="container">
@@ -392,7 +395,7 @@
   </main>
 
   <!-- Site Footer -->
-  <footer class="site-footer">
+  <footer class="site-footer" role="contentinfo">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
