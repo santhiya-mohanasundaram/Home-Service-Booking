@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login - SparkleHome Cleaning</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background: var(--bg-subtle);">
+
+  <!-- Site Navigation Bar -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon"><i class="fas fa-broom"></i></div>
+          <div class="brand-text">Sparkle<span>Home</span></div>
+        </a>
+
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="services.html" class="nav-link">Services</a></li>
+          <li><a href="prices.html" class="nav-link">Prices</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+
+        <div class="nav-actions" id="navAuthActions">
+          <a href="login.html" class="btn btn-primary btn-sm">
+            <i class="fas fa-user"></i> Login
+          </a>
+        </div>
+
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 160px); padding: 3rem 1.5rem;">
+    <div class="auth-card" style="width: 100%; max-width: 480px; background: #ffffff; border-radius: var(--radius-xl); padding: 2.75rem 2.25rem; box-shadow: var(--shadow-xl); border: 1px solid var(--border-color);">
+      
+      <!-- Auth Header -->
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="width: 58px; height: 58px; background: var(--primary-light); color: var(--primary); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem; box-shadow: 0 4px 12px rgba(0, 176, 144, 0.25);">
+          <i class="fas fa-user-lock"></i>
+        </div>
+        <h1 style="font-size: 1.85rem; color: var(--secondary); margin-bottom: 0.35rem;">Customer Login</h1>
+        <p style="font-size: 0.92rem; color: var(--text-muted);">
+          Log in to continue booking and manage your appointments.
+        </p>
+      </div>
+
+      <!-- Quick Demo Credentials Box -->
+      <div style="background: #f8fafc; border: 1px dashed var(--primary); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 0.85rem; color: var(--text-main);">
+          <strong style="color: var(--primary);"><i class="fas fa-info-circle"></i> Demo User:</strong> user@example.com / User@123
+        </div>
+        <button type="button" id="fillDemoUserBtn" class="btn btn-outline-primary btn-sm" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+          Autofill
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="userLoginForm" novalidate>
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label for="loginEmail" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem;">
+            Email Address *
+          </label>
+          <div style="position: relative;">
+            <i class="fas fa-envelope" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+            <input type="email" id="loginEmail" class="form-control" placeholder="name@example.com" style="padding-left: 2.5rem;" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <label for="loginPassword" style="font-weight: 600; font-size: 0.92rem; margin: 0;">Password *</label>
+            <a href="#" style="font-size: 0.82rem; color: var(--primary); text-decoration: none;">Forgot?</a>
+          </div>
+          <div style="position: relative;">
+            <i class="fas fa-lock" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+            <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
+            <button type="button" class="password-toggle-btn" data-target="loginPassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" aria-label="Toggle password visibility">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; color: var(--text-muted); cursor: pointer;">
+            <input type="checkbox" id="rememberMe" style="accent-color: var(--primary);">
+            Remember me
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-bottom: 1.25rem;">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+
+        <div style="text-align: center; font-size: 0.92rem; color: var(--text-muted);">
+          Don't have an account? <a href="register.html" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Register here</a>
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container" style="text-align: center; padding: 1.5rem 0;">
+      <p style="color: var(--text-muted); font-size: 0.85rem;">
+        &copy; 2026 SparkleHome Services. Frontend Demonstration Mode.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
