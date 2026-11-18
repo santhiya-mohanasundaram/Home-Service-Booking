@@ -147,7 +147,7 @@
                   <label for="contactName" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem;">
                     Full Name *
                   </label>
-                  <input type="text" id="contactName" class="form-control" placeholder="e.g. Priya Iyer" required>
+                  <input type="text" id="contactName" class="form-control" placeholder="e.g. Priya Iyer" autocomplete="name" minlength="2" required aria-required="true">
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
@@ -155,14 +155,42 @@
                     <label for="contactEmail" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem;">
                       Email Address *
                     </label>
-                    <input type="email" id="contactEmail" class="form-control" placeholder="priya@example.com" required>
+                    <input type="email" id="contactEmail" class="form-control" placeholder="priya@example.com" autocomplete="email" required aria-required="true">
                   </div>
 
                   <div class="form-group">
                     <label for="contactPhone" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem;">
                       Phone Number *
                     </label>
-                    <input type="tel" id="contactPhone" class="form-control" placeholder="10-digit number" maxlength="10" required>
+                    <input type="tel" id="contactPhone" class="form-control" placeholder="10-digit number" maxlength="10" pattern="[0-9]{10}" inputmode="numeric" autocomplete="tel" title="Please enter a valid 10-digit number" required aria-required="true">
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                  <div class="form-group">
+                    <label for="contactService" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem;">
+                      Service of Interest
+                    </label>
+                    <select id="contactService" class="form-control" style="background-color: #fff;">
+                      <option value="general">General Inquiry</option>
+                      <option value="deep-cleaning">Deep Home Cleaning</option>
+                      <option value="regular-cleaning">Regular Maid / Maintenance</option>
+                      <option value="kitchen-cleaning">Intensive Kitchen Cleaning</option>
+                      <option value="bathroom-cleaning">Sanitizing Bathroom Deep Clean</option>
+                      <option value="sofa-carpet">Sofa & Carpet Shampooing</option>
+                      <option value="move-in-out">Move-In / Move-Out Cleaning</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="preferredContactMethod" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem;">
+                      Preferred Contact Method
+                    </label>
+                    <select id="preferredContactMethod" class="form-control" style="background-color: #fff;">
+                      <option value="phone">Phone Call</option>
+                      <option value="whatsapp">WhatsApp</option>
+                      <option value="email">Email</option>
+                    </select>
                   </div>
                 </div>
 
@@ -170,7 +198,7 @@
                   <label for="contactMessage" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem;">
                     Your Message / Query *
                   </label>
-                  <textarea id="contactMessage" class="form-control" rows="4" placeholder="How can our cleaning specialists assist you?" required></textarea>
+                  <textarea id="contactMessage" class="form-control" rows="4" maxlength="1000" placeholder="How can our cleaning specialists assist you?" required aria-required="true"></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block btn-lg">
