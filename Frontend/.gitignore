@@ -1,0 +1,22 @@
+﻿# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing & Logs
+coverage/
+*.log
+npm-debug.log*
+
+# Environment & OS
+.DS_Store
+Thumbs.db
+*.tmp
+.env
+.env.local
+
+# IDE & Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
