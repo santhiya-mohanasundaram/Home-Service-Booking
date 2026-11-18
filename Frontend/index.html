@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SparkleHome - Professional Home Cleaning Services</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Site Navigation Bar -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="navbar">
+        <!-- Logo -->
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon">
+            <i class="fas fa-broom"></i>
+          </div>
+          <div class="brand-text">Sparkle<span>Home</span></div>
+        </a>
+
+        <!-- Navigation Menu -->
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link active">Home</a></li>
+          <li><a href="services.html" class="nav-link">Services</a></li>
+          <li><a href="prices.html" class="nav-link">Prices</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+
+        <!-- User / Auth Buttons -->
+        <div class="nav-actions" id="navAuthActions">
+          <a href="login.html" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-user"></i> Login / Register
+          </a>
+          <a href="booking.html" class="btn btn-primary btn-sm">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-curved-bg"></div>
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <span class="badge badge-primary hero-badge">
+              <i class="fas fa-sparkles"></i> #1 Rated Home Cleaning in Town
+            </span>
+            <h1 class="hero-title">
+              Professional <span class="highlight">Home Cleaning</span> Services
+            </h1>
+            <p class="hero-subtitle">
+              A spotless home for a healthier, happier family. Our verified, vetted cleaning experts use hospital-grade disinfectants and modern equipment to leave every corner sparkling clean.
+            </p>
+
+            <div class="hero-cta-group">
+              <a href="booking.html" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-alt"></i> Book Now
+              </a>
+              <a href="services.html" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-search"></i> Explore Services
+              </a>
+            </div>
+
+            <!-- Quick Cleaning Team Selector (Male / Female ONLY) -->
+            <div class="hero-team-selector" style="margin-top: 2rem; background: #ffffff; padding: 1.25rem 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-color); max-width: 480px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
+                <span style="font-weight: 700; font-size: 0.92rem; color: var(--text-main);">
+                  <i class="fas fa-users-cog" style="color:var(--primary); margin-right: 6px;"></i> Select Cleaning Team:
+                </span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">(Male / Female)</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <button type="button" class="team-quick-btn active" id="heroSelectFemale" onclick="selectHeroTeam('Female', this)" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; border-radius: var(--radius-pill); border: 2px solid var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; cursor: pointer; transition: var(--transition);">
+                  <i class="fas fa-female"></i> Female Cleaner
+                </button>
+                <button type="button" class="team-quick-btn" id="heroSelectMale" onclick="selectHeroTeam('Male', this)" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; border-radius: var(--radius-pill); border: 2px solid var(--border-color); background: #ffffff; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: var(--transition);">
+                  <i class="fas fa-male"></i> Male Cleaner
+                </button>
+              </div>
+            </div>
+
+            <!-- Trust Stats Row -->
+            <div class="hero-stats-row" style="margin-top: 2.2rem; display: flex; gap: 2rem; flex-wrap: wrap;">
+              <div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--secondary);">50k+</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Homes Sanitized</div>
+              </div>
+              <div style="width: 1px; background: var(--border-color);"></div>
+              <div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">4.9 ★</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Verified Reviews</div>
+              </div>
+              <div style="width: 1px; background: var(--border-color);"></div>
+              <div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--secondary);">100%</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Satisfaction Guarantee</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Image & Floating Badges -->
+          <div class="hero-image-wrapper">
+            <div class="hero-image-container">
+              <img src="images/banners/hero-cleaner.jpg" alt="Professional Cleaner" class="hero-main-img">
+              
+              <!-- Floating Badges -->
+              <div class="floating-pill pill-top-right">
+                <i class="fas fa-check-double"></i>
+                <div>
+                  <span style="display:block; font-size:0.75rem; color:var(--text-muted);">Quality Assured</span>
+                  <span>Trusted Cleaners</span>
+                </div>
+              </div>
+
+              <div class="floating-pill pill-bottom-left">
+                <i class="fas fa-leaf" style="color: #10b981;"></i>
+                <div>
+                  <span style="display:block; font-size:0.75rem; color:var(--text-muted);">100% Safe</span>
+                  <span>Eco-Friendly Products</span>
+                </div>
+              </div>
+
+              <div class="floating-pill pill-bottom-right" style="position:absolute; bottom: 12%; right: -15px;">
+                <i class="fas fa-shield-alt" style="color: #0284c7;"></i>
+                <div>
+                  <span style="display:block; font-size:0.75rem; color:var(--text-muted);">Safe & Verified</span>
+                  <span>Background Checked</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cleaning Team Selection Showcase (Male / Female Only) -->
+    <section class="section-padding bg-subtle">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary">Dedicated Staff</span>
+          <h2 class="section-title">Select Your Preferred Cleaning Team</h2>
+          <p class="section-subtitle">
+            Choose your preferred cleaning staff based on comfort and preference. Only verified Male or Female cleaners assigned.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 800px; margin: 0 auto;">
+          <!-- Female Team Card -->
+          <div class="team-profile-card" onclick="startBookingWithTeam('Female')" style="background:#ffffff; border-radius: var(--radius-lg); padding: 1.75rem; text-align: center; border: 2px solid var(--primary); box-shadow: var(--shadow-teal); cursor: pointer; transition: var(--transition);">
+            <div style="width: 110px; height: 110px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.25rem; border: 4px solid var(--primary-light);">
+              <img src="images/home/cleaner-female.jpg" alt="Female Cleaner" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <span class="badge badge-success" style="margin-bottom: 0.5rem;"><i class="fas fa-check"></i> Available</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.35rem;">Female Cleaning Staff</h3>
+            <p style="font-size: 0.88rem; margin-bottom: 1.25rem;">
+              Experienced female cleaning professionals trained in thorough household sanitization, kitchen deep scrubbing, and bedroom organizing.
+            </p>
+            <button class="btn btn-primary btn-block">
+              <i class="fas fa-check-circle"></i> Select Female Cleaner
+            </button>
+          </div>
+
+          <!-- Male Team Card -->
+          <div class="team-profile-card" onclick="startBookingWithTeam('Male')" style="background:#ffffff; border-radius: var(--radius-lg); padding: 1.75rem; text-align: center; border: 2px solid var(--border-color); box-shadow: var(--shadow-md); cursor: pointer; transition: var(--transition);">
+            <div style="width: 110px; height: 110px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.25rem; border: 4px solid #f1f5f9;">
+              <img src="images/home/cleaner-male.jpg" alt="Male Cleaner" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <span class="badge badge-success" style="margin-bottom: 0.5rem;"><i class="fas fa-check"></i> Available</span>
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.35rem;">Male Cleaning Staff</h3>
+            <p style="font-size: 0.88rem; margin-bottom: 1.25rem;">
+              Skilled male cleaning specialists proficient with heavy floor scrubbing machines, high ceiling dusting, corridor buffing, and deep cleaning.
+            </p>
+            <button class="btn btn-outline-primary btn-block">
+              <i class="fas fa-check-circle"></i> Select Male Cleaner
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1 (Alternating: Content Left, Visual Right): World-Class Standards -->
+    <section class="section-padding" id="why-choose-us" aria-label="Why Choose Us">
+      <div class="container">
+        <div class="why-us-grid">
+          <!-- Left: Content & Quality Checklist -->
+          <div class="why-us-content">
+            <span class="badge badge-primary" style="margin-bottom: 0.75rem;">
+              <i class="fas fa-shield-alt"></i> Why Choose Us
+            </span>
+            <h2 class="section-title" style="text-align: left; margin-bottom: 1rem; color: var(--secondary);">
+              World-Class Standards for Your Comfort & Hygiene
+            </h2>
+            <p style="margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.7; color: var(--text-muted);">
+              We combine hospital-grade hygiene protocols, non-toxic eco-certified cleaning materials, and thoroughly vetted personnel to give you a pristine living environment.
+            </p>
+
+            <div class="why-features-list">
+              <div class="why-feature-item">
+                <div class="why-feature-icon"><i class="fas fa-user-shield"></i></div>
+                <div>
+                  <h4>100% Background-Checked Cleaners</h4>
+                  <p>Every cleaner undergoes Aadhaar verification, police background screening, and 40+ hours of rigorous training.</p>
+                </div>
+              </div>
+
+              <div class="why-feature-item">
+                <div class="why-feature-icon"><i class="fas fa-undo-alt"></i></div>
+                <div>
+                  <h4>100% Satisfaction Guarantee</h4>
+                  <p>If you're not completely satisfied with our service, we'll return and re-clean free of charge within 24 hours.</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+              <a href="booking.html" class="btn btn-primary">
+                <i class="fas fa-calendar-check"></i> Book a Clean Home
+              </a>
+              <a href="about.html" class="btn btn-outline-primary">
+                <i class="fas fa-info-circle"></i> Learn More About Standards
+              </a>
+            </div>
+          </div>
+
+          <!-- Right: Visual Image Showcase (No Whitespace) -->
+          <div class="image-showcase-box">
+            <div class="image-showcase-main">
+              <img src="images/home/clean-living.jpg" alt="Pristine Living Room After Cleaning">
+              <div class="image-floating-badge badge-top-left">
+                <i class="fas fa-award" style="color: var(--primary); font-size: 1.1rem;"></i>
+                <span>Hospital-Grade Quality</span>
+              </div>
+              <div class="image-floating-badge badge-bottom-right">
+                <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.1rem;"></i>
+                <span>Spotless & Sanitized</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2 (Alternating: Visual Left, Content Right): Eco-Safe Care -->
+    <section class="section-padding bg-subtle" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+      <div class="container">
+        <div class="why-us-grid" style="grid-template-columns: 0.95fr 1.05fr;">
+          <!-- Left: Dual Image Showcase -->
+          <div class="dual-image-card">
+            <img src="images/home/clean-kitchen-wide.jpg" alt="Deep Cleaned Modern Kitchen" class="main-img">
+            <img src="images/home/cleaning-equipment.jpg" alt="Eco-Friendly Detergents" class="sub-img">
+            <div class="image-floating-badge badge-bottom-left" style="z-index: 3;">
+              <i class="fas fa-leaf" style="color: #10b981; font-size: 1.1rem;"></i>
+              <span>100% Eco-Safe Chemicals</span>
+            </div>
+          </div>
+
+          <!-- Right: Content & Eco Highlights -->
+          <div class="why-us-content">
+            <span class="badge badge-success" style="margin-bottom: 0.75rem;">
+              <i class="fas fa-leaf"></i> Eco-Safe & Non-Toxic
+            </span>
+            <h2 class="section-title" style="text-align: left; margin-bottom: 1rem; color: var(--secondary);">
+              Expert Cleaners, Trusted & Eco-Friendly Care
+            </h2>
+            <p style="margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.7; color: var(--text-muted);">
+              Protect your family, infants, and pets from toxic chemical fumes. Our cleaners use certified organic, biodegradable detergents that eradicate grime and odors naturally.
+            </p>
+
+            <div class="why-features-list">
+              <div class="why-feature-item">
+                <div class="why-feature-icon" style="background: #dcfce7; color: #15803d;"><i class="fas fa-spray-can"></i></div>
+                <div>
+                  <h4>Zero Harsh Acids & Fumes</h4>
+                  <p>Specially formulated plant-based active agents that dissolve stubborn oil and grease without damaging tiles or leaving strong odors.</p>
+                </div>
+              </div>
+
+              <div class="why-feature-item">
+                <div class="why-feature-icon" style="background: #e0f2fe; color: #0284c7;"><i class="fas fa-temperature-high"></i></div>
+                <div>
+                  <h4>140°C High-Pressure Steam Sterilization</h4>
+                  <p>Destroys 99.9% of dust mites, pathogens, and unseen bacteria without toxic chemical residue.</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+              <a href="services.html" class="btn btn-outline-primary">
+                <i class="fas fa-search"></i> Explore All Services
+              </a>
+              <a href="prices.html" class="btn btn-primary">
+                <i class="fas fa-tag"></i> View Transparent Rates
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Preview Section -->
+    <section class="section-padding bg-subtle">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary">Comprehensive Coverage</span>
+          <h2 class="section-title">Our Premium Cleaning Services</h2>
+          <p class="section-subtitle">
+            Explore our specialized residential cleaning packages designed for modern apartments, villas, and independent houses.
+          </p>
+        </div>
+
+        <div class="services-grid">
+          <!-- Kitchen Cleaning -->
+          <div class="service-card">
+            <div class="service-img-wrapper">
+              <img src="images/services/kitchen.jpg" alt="Kitchen Cleaning">
+            </div>
+            <div class="service-card-body">
+              <h3 class="service-card-title">Kitchen Cleaning</h3>
+              <p class="service-card-desc">Degreasing gas stoves, chimney filters, countertops, tile walls, kitchen sinks and cabinets.</p>
+              <ul class="service-features-list">
+                <li><i class="fas fa-check-circle"></i> Oil & Grease Removal</li>
+                <li><i class="fas fa-check-circle"></i> Sink & Hob Sanitization</li>
+              </ul>
+              <div class="service-card-footer">
+                <a href="services.html" class="btn btn-outline-primary btn-sm btn-block">Learn More</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bedroom Cleaning -->
+          <div class="service-card">
+            <div class="service-img-wrapper">
+              <img src="images/services/bedroom.jpg" alt="Bedroom Cleaning">
+            </div>
+            <div class="service-card-body">
+              <h3 class="service-card-title">Bedroom Cleaning</h3>
+              <p class="service-card-desc">Deep vacuuming mattresses, dusting wardrobes, sanitizing mirrors, and fragrance mopping.</p>
+              <ul class="service-features-list">
+                <li><i class="fas fa-check-circle"></i> Mattress Dust-Mite Cleanse</li>
+                <li><i class="fas fa-check-circle"></i> Wardrobe & Floor Mopping</li>
+              </ul>
+              <div class="service-card-footer">
+                <a href="services.html" class="btn btn-outline-primary btn-sm btn-block">Learn More</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bathroom Cleaning -->
+          <div class="service-card">
+            <div class="service-img-wrapper">
+              <img src="images/services/bathroom.jpg" alt="Bathroom Cleaning">
+            </div>
+            <div class="service-card-body">
+              <h3 class="service-card-title">Bathroom Cleaning</h3>
+              <p class="service-card-desc">Hard water stain removal, toilet commode acid-free descaling, tile scrubbing and tap buffing.</p>
+              <ul class="service-features-list">
+                <li><i class="fas fa-check-circle"></i> Tile & Grout Scrubbing</li>
+                <li><i class="fas fa-check-circle"></i> Odor Neutralization</li>
+              </ul>
+              <div class="service-card-footer">
+                <a href="services.html" class="btn btn-outline-primary btn-sm btn-block">Learn More</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deep Cleaning -->
+          <div class="service-card">
+            <div class="service-img-wrapper">
+              <img src="images/services/deep-cleaning.jpg" alt="Deep Cleaning">
+            </div>
+            <div class="service-card-body">
+              <h3 class="service-card-title">Deep Cleaning</h3>
+              <p class="service-card-desc">Industrial rotary machine floor buffing, steam sterilization, and full corner-to-corner detailing.</p>
+              <ul class="service-features-list">
+                <li><i class="fas fa-check-circle"></i> Machine Floor Scrubbing</li>
+                <li><i class="fas fa-check-circle"></i> High Crevice Dirt Cleanse</li>
+              </ul>
+              <div class="service-card-footer">
+                <a href="services.html" class="btn btn-outline-primary btn-sm btn-block">Learn More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+          <a href="services.html" class="btn btn-primary btn-lg">
+            <i class="fas fa-th-large"></i> View All 7 Services & Select
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section-padding">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge badge-primary">Real Reviews</span>
+          <h2 class="section-title">Trusted by Thousands of Happy Families</h2>
+          <p class="section-subtitle">
+            See what our verified homeowners and apartment residents say about their SparkleHome cleaning experience.
+          </p>
+        </div>
+
+        <div class="testimonials-grid">
+          <!-- Testimonial 1 -->
+          <div class="testimonial-card">
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+              "The female cleaning team arrived right on time with all modern equipment. My kitchen tiles and oily chimney look brand new! Very polite and professional service."
+            </p>
+            <div class="testimonial-author">
+              <img src="images/home/avatar-1.jpg" alt="Pooja Sharma" class="author-avatar">
+              <div>
+                <h4 class="author-name">Pooja Sharma</h4>
+                <span class="author-location">Bengaluru, Whitefield</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 2 -->
+          <div class="testimonial-card">
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+              "Booked the Full Home Deep Cleaning package before Diwali. The team used rotary machines on marble floors and hospital-grade steam sanitizers. 10/10 recommendation!"
+            </p>
+            <div class="testimonial-author">
+              <img src="images/home/avatar-2.jpg" alt="Rohan Verma" class="author-avatar">
+              <div>
+                <h4 class="author-name">Rohan Verma</h4>
+                <span class="author-location">Mumbai, Powai</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 3 -->
+          <div class="testimonial-card">
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+              "Booking was effortless. I loved that they let me select Male or Female staff directly. The bathroom tile descaling was miraculous. Will definitely book monthly."
+            </p>
+            <div class="testimonial-author">
+              <img src="images/home/avatar-3.jpg" alt="Meera Nair" class="author-avatar">
+              <div>
+                <h4 class="author-name">Meera Nair</h4>
+                <span class="author-location">Delhi NCR, Gurgaon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA Banner -->
+    <section style="background: linear-gradient(135deg, var(--secondary) 0%, #0f172a 100%); padding: 4.5rem 0; color: #ffffff; text-align: center; position: relative; overflow: hidden;">
+      <div class="container" style="position: relative; z-index: 2;">
+        <span class="badge" style="background: rgba(0, 176, 144, 0.2); color: var(--primary); margin-bottom: 1rem; border: 1px solid var(--primary);">Instant Online Booking</span>
+        <h2 style="font-size: 2.4rem; color: #ffffff; margin-bottom: 1rem;">Experience a Truly Spotless Home Today</h2>
+        <p style="color: #94a3b8; max-width: 600px; margin: 0 auto 2.5rem; font-size: 1.05rem;">
+          Schedule your professional cleaning in under 60 seconds. Choose your preferred cleaning staff, select services, and pick an arrival time slot.
+        </p>
+        <div style="display:flex; justify-content:center; gap:1.2rem; flex-wrap:wrap;">
+          <a href="booking.html" class="btn btn-primary btn-lg">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+          <a href="prices.html" class="btn btn-outline btn-lg" style="color:#ffffff; border-color: rgba(255,255,255,0.4);">
+            <i class="fas fa-tag"></i> View Transparent Pricing
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand Info -->
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo" style="color: #ffffff; margin-bottom: 1.25rem;">
+            <div class="logo-icon"><i class="fas fa-broom"></i></div>
+            <div class="brand-text" style="color:#fff;">Sparkle<span>Home</span></div>
+          </a>
+          <p class="footer-about">
+            India's most trusted home sanitization and deep cleaning company. Delivering hygienic, eco-safe and reliable cleaning services to your doorstep.
+          </p>
+          <div class="footer-socials">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Services</a></li>
+            <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Prices</a></li>
+            <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+            <li><a href="contact.html"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+            <li><a href="booking.html"><i class="fas fa-chevron-right"></i> Book a Service</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Services -->
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Our Services</h4>
+          <ul class="footer-links">
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Kitchen Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Bedroom Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Bathroom Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Deep Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Corridor Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Hall Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Full Home Cleaning</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact Info -->
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Contact & Support</h4>
+          <ul class="footer-links footer-contact-info">
+            <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
+            <li><i class="fas fa-envelope"></i> support@sparklehome.com</li>
+            <li><i class="fas fa-map-marker-alt"></i> Sector 5, Bengaluru, Karnataka, India</li>
+            <li><i class="fas fa-clock"></i> 7:00 AM – 9:00 PM (All 7 Days)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 SparkleHome Cleaning Services. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <!-- Discreet Admin Portal Link (Restricted to Admins) -->
+          <a href="admin-login.html" style="color: var(--text-muted); opacity: 0.6;"><i class="fas fa-lock"></i> Staff Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script>
+    // Helper to store quick team selection on hero section
+    let selectedHeroTeamPref = "Female";
+
+    function selectHeroTeam(pref, btn) {
+      selectedHeroTeamPref = pref;
+      document.querySelectorAll(".team-quick-btn").forEach(b => {
+        b.classList.remove("active");
+        b.style.border = "2px solid var(--border-color)";
+        b.style.background = "#ffffff";
+        b.style.color = "var(--text-muted)";
+      });
+      btn.classList.add("active");
+      btn.style.border = "2px solid var(--primary)";
+      btn.style.background = "var(--primary-light)";
+      btn.style.color = "var(--primary)";
+      sessionStorage.setItem("shc_quick_team_pref", pref);
+    }
+
+    function startBookingWithTeam(pref) {
+      sessionStorage.setItem("shc_quick_team_pref", pref);
+      const user = getCurrentUser();
+      if (!user) {
+        sessionStorage.setItem("shc_redirect_after_login", "booking.html");
+        showToast(`Selected ${pref} Cleaner Staff. Please login to continue.`, "info");
+        setTimeout(() => { window.location.href = "login.html"; }, 700);
+      } else {
+        window.location.href = "booking.html";
+      }
+    }
+  </script>
+</body>
+</html>

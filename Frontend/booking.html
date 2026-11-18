@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book a Cleaning Service - SparkleHome</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Site Navigation Bar -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon"><i class="fas fa-broom"></i></div>
+          <div class="brand-text">Sparkle<span>Home</span></div>
+        </a>
+
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="services.html" class="nav-link">Services</a></li>
+          <li><a href="prices.html" class="nav-link">Prices</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li><a href="booking.html" class="nav-link active">Booking</a></li>
+        </ul>
+
+        <div class="nav-actions" id="navAuthActions">
+          <!-- Auth buttons dynamically rendered by main.js -->
+        </div>
+
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Booking Progress Header -->
+    <section style="background: linear-gradient(135deg, #f0fdf9 0%, #e0f2fe 100%); padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border-color);">
+      <div class="container">
+        <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+          <span class="badge badge-primary" style="margin-bottom: 0.5rem;">
+            <i class="fas fa-shield-check"></i> Step 2: Service Configuration
+          </span>
+          <h1 style="font-size: 2.2rem; color: var(--secondary); margin-bottom: 0.5rem;">
+            Customize Your Cleaning
+          </h1>
+          <p style="font-size: 0.95rem; color: var(--text-muted);">
+            Select your cleaning team, services, room layout, and convenient time slot.
+          </p>
+        </div>
+
+        <!-- Visual Step Tracker -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin-top: 1.8rem; flex-wrap: wrap;">
+          <div style="display:flex; align-items:center; gap:0.5rem; color: var(--primary); font-weight:700; font-size:0.9rem;">
+            <span style="width:28px; height:28px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.8rem;"><i class="fas fa-check"></i></span>
+            <span>1. User Login</span>
+          </div>
+          <div style="width:40px; height:2px; background:var(--primary);"></div>
+          <div style="display:flex; align-items:center; gap:0.5rem; color: var(--secondary); font-weight:700; font-size:0.9rem;">
+            <span style="width:28px; height:28px; border-radius:50%; background:var(--secondary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.8rem;">2</span>
+            <span>2. Booking Details</span>
+          </div>
+          <div style="width:40px; height:2px; background:var(--border-color);"></div>
+          <div style="display:flex; align-items:center; gap:0.5rem; color: var(--text-light); font-weight:600; font-size:0.9rem;">
+            <span style="width:28px; height:28px; border-radius:50%; background:#e2e8f0; color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:0.8rem;">3</span>
+            <span>3. Review & Summary</span>
+          </div>
+          <div style="width:40px; height:2px; background:var(--border-color);"></div>
+          <div style="display:flex; align-items:center; gap:0.5rem; color: var(--text-light); font-weight:600; font-size:0.9rem;">
+            <span style="width:28px; height:28px; border-radius:50%; background:#e2e8f0; color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:0.8rem;">4</span>
+            <span>4. Confirmation & PDF</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Booking Layout -->
+    <section class="section-padding">
+      <div class="container">
+        <div class="booking-layout-grid">
+
+          <!-- Left Column: Booking Form Steps -->
+          <div class="booking-form-col">
+            
+            <!-- SECTION A: Select Cleaning Team (MALE / FEMALE ONLY) -->
+            <div class="booking-section-card">
+              <div class="booking-step-title">
+                <span class="step-num">A</span>
+                <div>
+                  <h3>Select Cleaning Team</h3>
+                  <p>Choose your preferred cleaning team. (Select either Male or Female)</p>
+                </div>
+              </div>
+
+              <div class="team-selection-grid">
+                <!-- Female Option -->
+                <div class="team-option-card selected" id="teamFemaleCard">
+                  <div class="team-avatar-img">
+                    <img src="images/home/cleaner-female.jpg" alt="Female Cleaner">
+                  </div>
+                  <div class="team-option-info">
+                    <h4>Female Cleaner</h4>
+                    <p>Trained female cleaning specialist for thorough room sanitization & care.</p>
+                  </div>
+                  <div class="team-check-badge">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+
+                <!-- Male Option -->
+                <div class="team-option-card" id="teamMaleCard">
+                  <div class="team-avatar-img">
+                    <img src="images/home/cleaner-male.jpg" alt="Male Cleaner">
+                  </div>
+                  <div class="team-option-info">
+                    <h4>Male Cleaner</h4>
+                    <p>Skilled male cleaning specialist for heavy scrubbing & machine cleaning.</p>
+                  </div>
+                  <div class="team-check-badge">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION B: Select Services (Multiple Selections Allowed) -->
+            <div class="booking-section-card">
+              <div class="booking-step-title">
+                <span class="step-num">B</span>
+                <div>
+                  <h3>Select Services</h3>
+                  <p>Check one or multiple cleaning services to include in your booking.</p>
+                </div>
+              </div>
+
+              <!-- Rendered dynamically by js/booking.js with checkboxes -->
+              <div id="bookingServicesContainer" class="booking-services-grid">
+                <!-- Fallback items -->
+              </div>
+            </div>
+
+            <!-- SECTION C: Room Selection & Counter -->
+            <div class="booking-section-card">
+              <div class="booking-step-title">
+                <span class="step-num">C</span>
+                <div>
+                  <h3>Room Selection</h3>
+                  <p>Choose the target area or select All Rooms to specify exact room quantity.</p>
+                </div>
+              </div>
+
+              <div class="room-selector-pills">
+                <div class="room-radio-box selected" data-room="All Rooms">
+                  <i class="fas fa-home"></i>
+                  <span>All Rooms</span>
+                </div>
+                <div class="room-radio-box" data-room="Bedroom">
+                  <i class="fas fa-bed"></i>
+                  <span>Bedroom</span>
+                </div>
+                <div class="room-radio-box" data-room="Kitchen">
+                  <i class="fas fa-sink"></i>
+                  <span>Kitchen</span>
+                </div>
+                <div class="room-radio-box" data-room="Bathroom">
+                  <i class="fas fa-bath"></i>
+                  <span>Bathroom</span>
+                </div>
+                <div class="room-radio-box" data-room="Hall">
+                  <i class="fas fa-couch"></i>
+                  <span>Hall</span>
+                </div>
+                <div class="room-radio-box" data-room="Other Rooms">
+                  <i class="fas fa-door-open"></i>
+                  <span>Other Rooms</span>
+                </div>
+              </div>
+
+              <!-- Room Counter (Displayed for All Rooms) -->
+              <div id="allRoomsCounterWrapper" style="margin-top: 1.5rem; padding: 1.25rem 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                  <strong style="font-size: 1rem; color: var(--secondary);">Total Number of Rooms:</strong>
+                  <div style="font-size: 0.85rem; color: var(--text-muted);">Pricing scales with the total number of selected rooms</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; background: #ffffff; padding: 0.35rem 0.8rem; border-radius: var(--radius-pill); border: 2px solid var(--primary);">
+                  <button type="button" id="btnDecRooms" style="width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <span id="roomCountVal" style="font-size: 1.3rem; font-weight: 800; min-width: 32px; text-align: center; color: var(--secondary);">1</span>
+                  <button type="button" id="btnIncRooms" style="width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--primary); color: #ffffff; font-weight: 800; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION D & E: Booking Date & Time Slot -->
+            <div class="booking-section-card">
+              <div class="booking-step-title">
+                <span class="step-num">D & E</span>
+                <div>
+                  <h3>Booking Schedule</h3>
+                  <p>Pick your preferred cleaning appointment date and arrival time window.</p>
+                </div>
+              </div>
+
+              <!-- D: Date Picker (No past dates allowed) -->
+              <div style="margin-bottom: 1.75rem;">
+                <label for="bookingDatePicker" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--secondary);">
+                  <i class="fas fa-calendar-day" style="color: var(--primary); margin-right: 6px;"></i> D. Booking Date:
+                </label>
+                <input type="date" id="bookingDatePicker" class="form-control" style="max-width: 320px; font-weight: 600;" required>
+                <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">* Past dates are strictly disabled</small>
+              </div>
+
+              <!-- E: Time Slots -->
+              <div>
+                <label style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--secondary);">
+                  <i class="fas fa-clock" style="color: var(--primary); margin-right: 6px;"></i> E. Available Time Slots:
+                </label>
+                <div class="time-slots-grid">
+                  <div class="slot-pill selected" data-slot="09:00 AM - 11:00 AM">
+                    <i class="fas fa-sun"></i> 09:00 AM – 11:00 AM
+                  </div>
+                  <div class="slot-pill" data-slot="11:30 AM - 01:30 PM">
+                    <i class="fas fa-sun"></i> 11:30 AM – 01:30 PM
+                  </div>
+                  <div class="slot-pill" data-slot="02:00 PM - 04:00 PM">
+                    <i class="fas fa-cloud-sun"></i> 02:00 PM – 04:00 PM
+                  </div>
+                  <div class="slot-pill" data-slot="04:30 PM - 06:30 PM">
+                    <i class="fas fa-cloud-moon"></i> 04:30 PM – 06:30 PM
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION F: Customer Details (Name, Phone & Address - No Email) -->
+            <div class="booking-section-card">
+              <div class="booking-step-title">
+                <span class="step-num">F</span>
+                <div>
+                  <h3>Customer Details</h3>
+                  <p>Provide contact number and service address for our cleaning crew to reach you.</p>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="custFullName">Full Name *</label>
+                  <input type="text" id="custFullName" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label for="custMobile">Mobile Number *</label>
+                  <input type="tel" id="custMobile" class="form-control" placeholder="10-digit mobile number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="custAddress">Complete Service Address *</label>
+                <textarea id="custAddress" class="form-control" rows="3" placeholder="Flat / House No., Apartment/Street name, Landmark, City, Pincode" required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="custNotes">Special Instructions (Optional)</label>
+                <textarea id="custNotes" class="form-control" rows="2" placeholder="e.g. Please ring bell twice, pets at home, handle antique mirrors carefully..."></textarea>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Sticky Price Summary & Confirm Trigger -->
+          <div class="booking-summary-col">
+            <div class="sticky-summary-card">
+              <h3 style="font-size: 1.3rem; margin-bottom: 1.25rem; color: var(--secondary); display: flex; align-items: center; justify-content: space-between;">
+                <span>Price Summary</span>
+                <i class="fas fa-receipt" style="color: var(--primary);"></i>
+              </h3>
+
+              <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700;">Cleaning Team Preference</span>
+                <div id="summaryTeamPref" style="font-weight: 700; color: var(--primary); font-size: 1.05rem; margin-top: 0.2rem;">
+                  Female Cleaner
+                </div>
+              </div>
+
+              <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700;">Selected Services & Rates</span>
+                <div id="summarySelectedServicesList" style="margin-top: 0.5rem;">
+                  <!-- Dynamic items -->
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem;">
+                <span style="color: var(--text-muted);">Rooms Multiplier:</span>
+                <strong id="summaryRoomCount" style="color: var(--secondary);">1 (All Rooms)</strong>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+                <div>
+                  <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Payable Amount:</span>
+                  <div id="summaryTotalAmount" style="font-size: 2.2rem; font-weight: 800; color: var(--primary); font-family: var(--font-heading);">
+                    ₹999
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-primary btn-block btn-lg" id="proceedToReviewBtn">
+                <i class="fas fa-check-circle"></i> Review & Confirm
+              </button>
+
+              <div style="margin-top: 1rem; text-align: center;">
+                <small style="color: var(--text-muted); font-size: 0.8rem;">
+                  <i class="fas fa-lock" style="color: var(--primary);"></i> Guaranteed Safe & Verified Staff
+                </small>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Booking Summary Review Modal -->
+    <div class="modal-overlay" id="bookingReviewModal">
+      <div class="modal-box" style="max-width: 580px;">
+        <div class="modal-header">
+          <h3 style="font-size: 1.35rem; color: var(--secondary);"><i class="fas fa-clipboard-check" style="color: var(--primary); margin-right: 8px;"></i> Step 3: Confirm Booking Summary</h3>
+          <button class="modal-close-btn" onclick="closeReviewModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 1.5rem;">
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Please review your booking details before final confirmation:
+          </p>
+
+          <table class="receipt-table" style="width: 100%; margin-bottom: 1.5rem; font-size: 0.92rem;">
+            <tr>
+              <th style="width: 40%; padding: 0.6rem; background: var(--bg-subtle);">Customer Name:</th>
+              <td id="modalReviewCustName" style="padding: 0.6rem; font-weight: 600;"></td>
+            </tr>
+            <tr>
+              <th style="padding: 0.6rem; background: var(--bg-subtle);">Contact Mobile:</th>
+              <td id="modalReviewCustPhone" style="padding: 0.6rem;"></td>
+            </tr>
+            <tr>
+              <th style="padding: 0.6rem; background: var(--bg-subtle);">Service Address:</th>
+              <td id="modalReviewCustAddress" style="padding: 0.6rem;"></td>
+            </tr>
+            <tr>
+              <th style="padding: 0.6rem; background: var(--bg-subtle);">Team Preference:</th>
+              <td id="modalReviewTeam" style="padding: 0.6rem; font-weight: 700; color: var(--primary);"></td>
+            </tr>
+            <tr>
+              <th style="padding: 0.6rem; background: var(--bg-subtle);">Date & Slot:</th>
+              <td id="modalReviewDate" style="padding: 0.6rem; font-weight: 600;"></td>
+            </tr>
+            <tr>
+              <th style="padding: 0.6rem; background: var(--bg-subtle);">Room Count:</th>
+              <td id="modalReviewRooms" style="padding: 0.6rem;"></td>
+            </tr>
+            <tr>
+              <th style="padding: 0.6rem; background: var(--bg-subtle);">Selected Services:</th>
+              <td id="modalReviewServices" style="padding: 0.6rem; font-weight: 600;"></td>
+            </tr>
+            <tr style="border-top: 2px solid var(--border-color);">
+              <th style="padding: 0.8rem; background: var(--primary-light); color: var(--primary); font-size: 1.05rem;">Total Amount:</th>
+              <td id="modalReviewTotal" style="padding: 0.8rem; font-weight: 800; font-size: 1.25rem; color: var(--primary);"></td>
+            </tr>
+          </table>
+
+          <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="closeReviewModal()">
+              <i class="fas fa-edit"></i> Edit Details
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmBookingFinalBtn">
+              <i class="fas fa-check-circle"></i> Confirm Booking
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo" style="color: #ffffff; margin-bottom: 1.25rem;">
+            <div class="logo-icon"><i class="fas fa-broom"></i></div>
+            <div class="brand-text" style="color:#fff;">Sparkle<span>Home</span></div>
+          </a>
+          <p class="footer-about">
+            India's most trusted home sanitization and deep cleaning company. Delivering hygienic, eco-safe and reliable cleaning services to your doorstep.
+          </p>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Services</a></li>
+            <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Prices</a></li>
+            <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+            <li><a href="contact.html"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+            <li><a href="booking.html"><i class="fas fa-chevron-right"></i> Book a Service</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Booking Policies</h4>
+          <ul class="footer-links">
+            <li><a href="#"><i class="fas fa-check"></i> Free Rescheduling</a></li>
+            <li><a href="#"><i class="fas fa-check"></i> Verified Cleaners</a></li>
+            <li><a href="#"><i class="fas fa-check"></i> Eco-Friendly Solutions</a></li>
+            <li><a href="#"><i class="fas fa-check"></i> 100% Satisfaction Guarantee</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Customer Helpline</h4>
+          <ul class="footer-links footer-contact-info">
+            <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
+            <li><i class="fas fa-envelope"></i> support@sparklehome.com</li>
+            <li><i class="fas fa-clock"></i> Mon - Sun: 7:00 AM – 9:00 PM</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 SparkleHome Cleaning Services. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="admin-login.html" style="color: var(--text-muted); opacity: 0.6;"><i class="fas fa-lock"></i> Staff Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Services - SparkleHome Cleaning</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Site Navigation Bar -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon"><i class="fas fa-broom"></i></div>
+          <div class="brand-text">Sparkle<span>Home</span></div>
+        </a>
+
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="services.html" class="nav-link active">Services</a></li>
+          <li><a href="prices.html" class="nav-link">Prices</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+
+        <div class="nav-actions" id="navAuthActions">
+          <a href="login.html" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-user"></i> Login / Register
+          </a>
+          <a href="booking.html" class="btn btn-primary btn-sm">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Page Header Banner -->
+    <section class="page-header" style="background: linear-gradient(135deg, #f0fdf9 0%, #e0f2fe 100%); padding: 3.5rem 0 3rem; text-align: center; border-bottom: 1px solid var(--border-color);">
+      <div class="container">
+        <span class="badge badge-primary" style="margin-bottom: 0.75rem;">
+          <i class="fas fa-sparkles"></i> Comprehensive Residential Care
+        </span>
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.75rem; color: var(--secondary);">
+          Our Cleaning Services
+        </h1>
+        <p style="max-width: 650px; margin: 0 auto; color: var(--text-muted); font-size: 1.05rem;">
+          Select from our 7 specialized cleaning treatments. Click any card to select multiple services, or view in-depth sanitization details below.
+        </p>
+      </div>
+    </section>
+
+    <!-- Services Catalog Grid -->
+    <section class="section-padding" aria-label="Cleaning Services List">
+      <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h3 style="font-size: 1.4rem;">Select One or Multiple Cleaning Services</h3>
+            <p style="font-size: 0.9rem;">You can choose multiple services simultaneously for a comprehensive home cleanse.</p>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center; background: var(--bg-subtle); padding: 0.4rem 1rem; border-radius: var(--radius-pill); border: 1px solid var(--border-color);">
+            <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+            <span style="font-size: 0.85rem; font-weight: 600;">Transparent pricing available on <a href="prices.html" style="color: var(--primary); text-decoration: underline;">Prices Page</a></span>
+          </div>
+        </div>
+
+        <!-- Populated dynamically by js/services.js (STRICTLY NO PRICES DISPLAYED) -->
+        <div class="services-grid" id="servicesListGrid">
+          <!-- Fallback dynamic items generated via services.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Service Inspection Section (Smooth scrolled when clicking View Details) -->
+    <section class="section-padding bg-subtle" id="serviceDetailsSection" style="display: none; border-top: 1px solid var(--border-color); scroll-margin-top: 90px;">
+      <div class="container">
+        <div class="section-header" style="margin-bottom: 2rem;">
+          <span class="badge badge-primary">Deep Dive</span>
+          <h2 class="section-title" id="detailTitle">Service Details</h2>
+          <p class="section-subtitle">Detailed cleaning procedure, safety standards, and equipment utilized.</p>
+        </div>
+
+        <div style="background:#ffffff; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr 1.2fr; gap: 2.5rem; align-items: center;" class="detail-container-grid">
+          <div style="border-radius: var(--radius-md); overflow: hidden; height: 320px; box-shadow: var(--shadow-md);">
+            <img id="detailImage" src="" alt="Service preview" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div>
+            <h3 style="font-size: 1.6rem; margin-bottom: 1rem; color: var(--secondary);">Sanitization Protocol</h3>
+            <p id="detailDesc" style="font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem; color: var(--text-muted);"></p>
+            
+            <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Treatment Includes:</h4>
+            <div id="detailFeatures" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 2rem;">
+              <!-- Dynamic features -->
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <a href="booking.html" class="btn btn-primary">
+                <i class="fas fa-calendar-check"></i> Book This Service
+              </a>
+              <a href="prices.html" class="btn btn-outline-primary">
+                <i class="fas fa-tag"></i> Check Service Rates
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sticky Bottom Multi-Service Selection Bar -->
+    <div id="servicesSelectionBar" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); color: #ffffff; padding: 1rem 1.5rem; z-index: 998; box-shadow: 0 -10px 25px rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.1);">
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span class="badge badge-success" id="selectedServicesCount">1 Service Selected</span>
+            <span style="font-size: 0.9rem; color: #cbd5e1;" id="selectedServicesNames">Kitchen Cleaning</span>
+          </div>
+          <small style="color: #94a3b8; font-size: 0.8rem;">Click more cards to bundle additional cleaning services</small>
+        </div>
+        <div>
+          <button class="btn btn-primary" id="proceedToBookingBtn">
+            Proceed to Booking <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo" style="color: #ffffff; margin-bottom: 1.25rem;">
+            <div class="logo-icon"><i class="fas fa-broom"></i></div>
+            <div class="brand-text" style="color:#fff;">Sparkle<span>Home</span></div>
+          </a>
+          <p class="footer-about">
+            India's most trusted home sanitization and deep cleaning company. Delivering hygienic, eco-safe and reliable cleaning services to your doorstep.
+          </p>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Services</a></li>
+            <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Prices</a></li>
+            <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+            <li><a href="contact.html"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+            <li><a href="booking.html"><i class="fas fa-chevron-right"></i> Book a Service</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Our 7 Services</h4>
+          <ul class="footer-links">
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Kitchen Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Bedroom Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Bathroom Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Deep Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Corridor Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Hall Cleaning</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Full Home Cleaning</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Contact & Support</h4>
+          <ul class="footer-links footer-contact-info">
+            <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
+            <li><i class="fas fa-envelope"></i> support@sparklehome.com</li>
+            <li><i class="fas fa-map-marker-alt"></i> Sector 5, Bengaluru, Karnataka, India</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 SparkleHome Cleaning Services. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="admin-login.html" style="color: var(--text-muted); opacity: 0.6;"><i class="fas fa-lock"></i> Staff Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/services.js"></script>
+</body>
+</html>
