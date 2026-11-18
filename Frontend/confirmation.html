@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmation - SparkleHome Cleaning</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- html2pdf.js CDN for direct PDF file generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+  <!-- Site Navigation Bar -->
+  <header class="site-header no-print">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon"><i class="fas fa-broom"></i></div>
+          <div class="brand-text">Sparkle<span>Home</span></div>
+        </a>
+
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="services.html" class="nav-link">Services</a></li>
+          <li><a href="prices.html" class="nav-link">Prices</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+          <li><a href="booking.html" class="nav-link">Booking</a></li>
+        </ul>
+
+        <div class="nav-actions" id="navAuthActions">
+          <!-- Auth buttons dynamically rendered by main.js -->
+        </div>
+
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section-padding bg-subtle" style="min-height: 80vh;">
+      <div class="container container-narrow">
+
+        <!-- Error State (when accessed with no valid confirmation) -->
+        <div id="noBookingState" style="display:none; text-align:center; padding: 3rem 1.5rem; background:#ffffff; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); border:1px solid var(--border-color);">
+          <div style="width:70px; height:70px; background:#fee2e2; color:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto 1.5rem;">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h2 style="font-size:1.8rem; margin-bottom:0.75rem; color:var(--secondary);">No Confirmed Booking Found</h2>
+          <p style="color:var(--text-muted); margin-bottom:1.5rem;">
+            You have not confirmed any active booking yet or your session has expired.
+          </p>
+          <a href="booking.html" class="btn btn-primary">
+            <i class="fas fa-calendar-plus"></i> Go to Booking
+          </a>
+        </div>
+
+        <!-- Valid Confirmation State -->
+        <div id="confirmedBookingWrapper" style="display:none;">
+          
+          <!-- Success Header Banner -->
+          <div style="text-align:center; margin-bottom: 2rem;">
+            <div style="width: 76px; height: 76px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1.25rem; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2);">
+              <i class="fas fa-check"></i>
+            </div>
+            <span class="badge badge-success" style="font-size: 0.9rem; padding: 0.4rem 1.2rem; margin-bottom: 0.6rem;">
+              <i class="fas fa-check-circle"></i> Booking Status: Confirmed
+            </span>
+            <h1 style="font-size: 2.4rem; color: var(--secondary); margin-bottom: 0.5rem;">
+              Thank You! Your Booking is Confirmed
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem;">
+              A verified cleaning professional has been assigned. Below is your official booking confirmation.
+            </p>
+          </div>
+
+          <!-- Printable & Downloadable Confirmation Card Container -->
+          <div id="printableConfirmationCard" style="background:#ffffff; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-xl); border: 1px solid var(--border-color); margin-bottom: 2rem;">
+            
+            <!-- Receipt Header -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:1.5rem; border-bottom: 2px solid var(--border-color); flex-wrap:wrap; gap:1rem;">
+              <div>
+                <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem;">
+                  <div style="width:36px; height:36px; background:linear-gradient(135deg, var(--primary), #0284c7); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.1rem;">
+                    <i class="fas fa-broom"></i>
+                  </div>
+                  <h2 style="font-size:1.4rem; color:var(--secondary); margin:0;">SparkleHome Cleaning Services</h2>
+                </div>
+                <div style="font-size:0.85rem; color:var(--text-muted);">Official Service Booking & Sanitization Receipt</div>
+                <div style="font-size:0.85rem; color:var(--text-muted);">Website: <a href="index.html" style="color:var(--primary);">www.sparklehome.com</a> | Helpline: +91 98765 43210</div>
+              </div>
+
+              <div style="text-align:right;">
+                <span style="font-size:0.85rem; color:var(--text-muted); display:block;">Booking Reference ID:</span>
+                <span id="confBookingId" style="font-family: monospace; font-size: 1.35rem; font-weight: 800; color: var(--secondary); letter-spacing: 0.05em; display:block;">
+                  SHC-2026-XXXXX
+                </span>
+                <span class="badge badge-success" id="confStatusBadge" style="margin-top:0.35rem;">
+                  <i class="fas fa-check-circle"></i> Confirmed
+                </span>
+              </div>
+            </div>
+
+            <!-- Customer & Team Details Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding: 1.5rem 0; border-bottom: 1px solid var(--border-color);" class="conf-details-subgrid">
+              <div>
+                <h4 style="font-size:0.95rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:0.6rem;">Customer Information</h4>
+                <div style="font-size:1rem; font-weight:700; color:var(--text-main);" id="confCustomerName">Rahul Sharma</div>
+                <div style="font-size:0.9rem; color:var(--text-muted); margin-top:0.2rem;" id="confCustomerContact">
+                  <i class="fas fa-phone-alt" style="font-size:0.8rem;"></i> 9876543210
+                </div>
+                <div style="font-size:0.9rem; color:var(--text-muted); margin-top:0.35rem;" id="confCustomerAddress">
+                  Flat 402, Green Meadows, Bengaluru
+                </div>
+              </div>
+
+              <div>
+                <h4 style="font-size:0.95rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:0.6rem;">Appointment & Staff Preference</h4>
+                <div style="font-size:0.95rem;">
+                  <strong style="color:var(--secondary);">Date:</strong> <span id="confBookingDate">2026-11-22</span>
+                </div>
+                <div style="font-size:0.95rem; margin-top:0.2rem;">
+                  <strong style="color:var(--secondary);">Time Slot:</strong> <span id="confBookingTime">09:00 AM – 11:00 AM</span>
+                </div>
+                <div style="font-size:0.95rem; margin-top:0.2rem;">
+                  <strong style="color:var(--secondary);">Assigned Team:</strong> <span id="confTeamPreference" style="color:var(--primary); font-weight:700;">Female Cleaner Staff</span>
+                </div>
+                <div style="font-size:0.95rem; margin-top:0.2rem;">
+                  <strong style="color:var(--secondary);">Room Count:</strong> <span id="confRoomCount">2 Rooms (All Rooms)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Services Summary Table -->
+            <div style="padding: 1.5rem 0;">
+              <h4 style="font-size:0.95rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:0.8rem;">Selected Cleaning Services</h4>
+              <table class="receipt-table" style="width:100%; border-collapse:collapse; margin-bottom:1.5rem;">
+                <thead>
+                  <tr style="background:var(--bg-subtle); border-bottom:2px solid var(--border-color); text-align:left;">
+                    <th style="padding:0.75rem 1rem;">Service Description</th>
+                    <th style="padding:0.75rem 1rem; text-align:center;">Rooms</th>
+                    <th style="padding:0.75rem 1rem; text-align:right;">Rate (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="confServicesTableBody">
+                  <!-- Dynamic rows -->
+                </tbody>
+                <tfoot>
+                  <tr style="border-top:2px solid var(--border-color); font-size:1.1rem;">
+                    <th colspan="2" style="padding:1rem; text-align:right; font-weight:800; color:var(--secondary);">Total Amount Paid / Payable:</th>
+                    <th style="padding:1rem; text-align:right; font-weight:800; color:var(--primary); font-size:1.35rem;" id="confTotalAmount">₹1,999</th>
+                  </tr>
+                </tfoot>
+              </table>
+
+              <!-- Special Instructions -->
+              <div id="confNotesWrapper" style="display:none; background:var(--bg-subtle); padding:1rem; border-radius:var(--radius-md); font-size:0.88rem; color:var(--text-muted);">
+                <strong style="color:var(--secondary);">Special Instructions:</strong> <span id="confSpecialNotes"></span>
+              </div>
+            </div>
+
+            <!-- Footer note inside printable card -->
+            <div style="text-align:center; padding-top:1.5rem; border-top:1px dashed var(--border-color); font-size:0.82rem; color:var(--text-muted);">
+              Thank you for choosing SparkleHome! Our service crew will call 30 minutes before arrival. All equipment & eco-friendly chemicals provided.
+            </div>
+
+          </div>
+
+          <!-- STEP 5: Download Booking Button (Displayed ONLY after successful confirmation) -->
+          <div class="no-print" style="display:flex; justify-content:center; gap:1.25rem; flex-wrap:wrap; margin-top:2rem;">
+            <!-- REQUIRED BUTTON: Download Booking -->
+            <button type="button" class="btn btn-primary btn-lg" id="btnDownloadBooking" onclick="downloadBookingPDF()">
+              <i class="fas fa-file-pdf"></i> Download Booking
+            </button>
+
+            <!-- Secondary Print / Home actions -->
+            <button type="button" class="btn btn-outline-primary btn-lg" onclick="window.print()">
+              <i class="fas fa-print"></i> Print Receipt
+            </button>
+            <a href="index.html" class="btn btn-outline btn-lg">
+              <i class="fas fa-home"></i> Return to Home
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer no-print">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo" style="color: #ffffff; margin-bottom: 1.25rem;">
+            <div class="logo-icon"><i class="fas fa-broom"></i></div>
+            <div class="brand-text" style="color:#fff;">Sparkle<span>Home</span></div>
+          </a>
+          <p class="footer-about">
+            India's most trusted home sanitization and deep cleaning company. Delivering hygienic, eco-safe and reliable cleaning services to your doorstep.
+          </p>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+            <li><a href="services.html"><i class="fas fa-chevron-right"></i> Services</a></li>
+            <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Prices</a></li>
+            <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+            <li><a href="contact.html"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+            <li><a href="booking.html"><i class="fas fa-chevron-right"></i> Book a Service</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h4 class="footer-title">Customer Support</h4>
+          <ul class="footer-links footer-contact-info">
+            <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
+            <li><i class="fas fa-envelope"></i> support@sparklehome.com</li>
+            <li><i class="fas fa-clock"></i> 7:00 AM – 9:00 PM (Everyday)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 SparkleHome Cleaning Services. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="admin-login.html" style="color: var(--text-muted); opacity: 0.6;"><i class="fas fa-lock"></i> Staff Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    let activeBooking = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadConfirmedBooking();
+    });
+
+    function loadConfirmedBooking() {
+      // 1. Try URL parameter
+      const params = new URLSearchParams(window.location.search);
+      const queryId = params.get("id");
+
+      const bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
+
+      if (queryId) {
+        activeBooking = bookings.find(b => b.id === queryId);
+      }
+
+      // 2. Try session storage fallback
+      if (!activeBooking) {
+        const sessionBooking = sessionStorage.getItem("shc_latest_confirmed_booking");
+        if (sessionBooking) {
+          try {
+            activeBooking = JSON.parse(sessionBooking);
+          } catch (e) {}
+        }
+      }
+
+      // If still not found, check the most recent booking in local storage
+      if (!activeBooking && bookings.length > 0) {
+        activeBooking = bookings[0];
+      }
+
+      const noBookingEl = document.getElementById("noBookingState");
+      const confirmedWrapper = document.getElementById("confirmedBookingWrapper");
+
+      if (!activeBooking) {
+        if (noBookingEl) noBookingEl.style.display = "block";
+        if (confirmedWrapper) confirmedWrapper.style.display = "none";
+        return;
+      }
+
+      if (noBookingEl) noBookingEl.style.display = "none";
+      if (confirmedWrapper) confirmedWrapper.style.display = "block";
+
+      // Populate confirmation details
+      document.getElementById("confBookingId").textContent = activeBooking.id;
+      document.getElementById("confCustomerName").textContent = activeBooking.customerName;
+      document.getElementById("confCustomerContact").innerHTML = `
+        <i class="fas fa-phone-alt" style="font-size:0.8rem;"></i> ${activeBooking.customerMobile}
+      `;
+      document.getElementById("confCustomerAddress").innerHTML = `
+        <i class="fas fa-map-marker-alt" style="font-size:0.8rem; color:var(--primary);"></i> ${activeBooking.customerAddress}
+      `;
+      document.getElementById("confBookingDate").textContent = activeBooking.bookingDate;
+      document.getElementById("confBookingTime").textContent = activeBooking.bookingTime;
+      document.getElementById("confTeamPreference").textContent = `${activeBooking.teamPreference || "Female"} Cleaner Staff`;
+      document.getElementById("confRoomCount").textContent = `${activeBooking.roomCount} Room(s) (${activeBooking.roomSelectionType || "All Rooms"})`;
+      document.getElementById("confTotalAmount").textContent = formatINR(activeBooking.totalAmount);
+
+      // Populate Services Table
+      const tbody = document.getElementById("confServicesTableBody");
+      if (tbody && activeBooking.selectedServices) {
+        tbody.innerHTML = activeBooking.selectedServices.map(s => `
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem 1rem;">
+              <strong>${s.name}</strong>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Standard sanitization & deep cleaning package</div>
+            </td>
+            <td style="padding: 0.75rem 1rem; text-align:center;">${activeBooking.roomCount}</td>
+            <td style="padding: 0.75rem 1rem; text-align:right; font-weight:600;">${formatINR(s.price * activeBooking.roomCount)}</td>
+          </tr>
+        `).join("");
+      }
+
+      // Notes
+      if (activeBooking.specialInstructions) {
+        const notesWrap = document.getElementById("confNotesWrapper");
+        const notesText = document.getElementById("confSpecialNotes");
+        if (notesWrap && notesText) {
+          notesText.textContent = activeBooking.specialInstructions;
+          notesWrap.style.display = "block";
+        }
+      }
+    }
+
+    // Step 5: Download Booking PDF Generation
+    function downloadBookingPDF() {
+      if (!activeBooking) {
+        showToast("No active booking to download.", "error");
+        return;
+      }
+
+      const element = document.getElementById("printableConfirmationCard");
+      showToast("Generating official booking confirmation PDF...", "info");
+
+      const btn = document.getElementById("btnDownloadBooking");
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+        btn.disabled = true;
+      }
+
+      const opt = {
+        margin:       10,
+        filename:     `SparkleHome_Booking_${activeBooking.id}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      if (window.html2pdf) {
+        html2pdf().set(opt).from(element).save().then(() => {
+          showToast("Booking PDF downloaded successfully!", "success");
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
+            btn.disabled = false;
+          }
+        }).catch(err => {
+          console.error(err);
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
+            btn.disabled = false;
+          }
+          window.print();
+        });
+      } else {
+        if (btn) {
+          btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
+          btn.disabled = false;
+        }
+        window.print();
+      }
+    }
+  </script>
+</body>
+</html>
