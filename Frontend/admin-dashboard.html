@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - SparkleHome Management</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background: var(--bg-subtle);">
+
+  <!-- Strict Admin View Container (Targeted by verifyAdminAccess in admin.js) -->
+  <div id="adminDashboardView">
+
+    <!-- Admin Top Header Bar -->
+    <header style="background: #ffffff; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100;">
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center; height: 75px;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <a href="index.html" class="brand-logo">
+            <div class="logo-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-shield-alt"></i></div>
+            <div class="brand-text">Sparkle<span>Home</span></div>
+          </a>
+          <span class="badge badge-danger" style="font-size: 0.75rem;">
+            <i class="fas fa-lock"></i> Strict Admin Panel
+          </span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0.8rem; background: var(--bg-subtle); border-radius: var(--radius-pill); border: 1px solid var(--border-color);">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: #10b981;"></div>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--secondary);">Admin Session Active</span>
+          </div>
+
+          <a href="index.html" class="btn btn-outline btn-sm" title="Preview public website">
+            <i class="fas fa-external-link-alt"></i> Live Site
+          </a>
+
+          <button class="btn btn-outline btn-sm" style="color: #ef4444; border-color: #fecaca;" onclick="handleAdminLogout()">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="section-padding">
+      <div class="container">
+
+        <!-- Welcome Banner & Spring Boot Architecture Notice -->
+        <div style="background: linear-gradient(135deg, var(--secondary) 0%, #0f172a 100%); border-radius: var(--radius-xl); padding: 2rem 2.5rem; color: #ffffff; margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+          <div>
+            <span class="badge" style="background: rgba(239, 68, 68, 0.25); color: #fca5a5; margin-bottom: 0.5rem; border: 1px solid rgba(239, 68, 68, 0.4);">
+              Management Overview
+            </span>
+            <h1 style="font-size: 2rem; color: #ffffff; margin-bottom: 0.4rem;">Service Operations Dashboard</h1>
+            <p style="color: #94a3b8; font-size: 0.95rem; max-width: 650px;">
+              Manage customer reservations, update real-time booking statuses, configure service prices, and review customer inquiries.
+            </p>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.08); padding: 1rem 1.25rem; border-radius: var(--radius-md); border: 1px solid rgba(255, 255, 255, 0.12); font-size: 0.85rem; color: #cbd5e1; max-width: 340px;">
+            <div style="font-weight: 700; color: #38bdf8; margin-bottom: 0.2rem;"><i class="fas fa-code-branch"></i> Java Spring Boot Ready:</div>
+            Ready for <code>@PreAuthorize("hasRole('ADMIN')")</code> REST endpoints on <code>/api/admin/bookings</code>.
+          </div>
+        </div>
+
+        <!-- 1. KPI Analytics Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
+          
+          <!-- Total Bookings -->
+          <div style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Bookings</span>
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: #eff6ff; color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+            </div>
+            <div id="statTotalBookings" style="font-size: 2.2rem; font-weight: 800; color: var(--secondary); font-family: var(--font-heading);">0</div>
+            <small style="color: var(--text-muted); font-size: 0.78rem;">Lifetime recorded bookings</small>
+          </div>
+
+          <!-- Pending Bookings -->
+          <div style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: #b45309; text-transform: uppercase;">Pending</span>
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="fas fa-hourglass-half"></i>
+              </div>
+            </div>
+            <div id="statPendingBookings" style="font-size: 2.2rem; font-weight: 800; color: #b45309; font-family: var(--font-heading);">0</div>
+            <small style="color: var(--text-muted); font-size: 0.78rem;">Awaiting staff dispatch</small>
+          </div>
+
+          <!-- Confirmed Bookings -->
+          <div style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: #15803d; text-transform: uppercase;">Confirmed</span>
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: #dcfce7; color: #15803d; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="fas fa-check-circle"></i>
+              </div>
+            </div>
+            <div id="statConfirmedBookings" style="font-size: 2.2rem; font-weight: 800; color: #15803d; font-family: var(--font-heading);">0</div>
+            <small style="color: var(--text-muted); font-size: 0.78rem;">Scheduled & verified</small>
+          </div>
+
+          <!-- Completed Bookings -->
+          <div style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">Completed</span>
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="fas fa-award"></i>
+              </div>
+            </div>
+            <div id="statCompletedBookings" style="font-size: 2.2rem; font-weight: 800; color: var(--primary); font-family: var(--font-heading);">0</div>
+            <small style="color: var(--text-muted); font-size: 0.78rem;">Successfully delivered</small>
+          </div>
+
+          <!-- Cancelled Bookings -->
+          <div style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: #b91c1c; text-transform: uppercase;">Cancelled</span>
+              <div style="width: 40px; height: 40px; border-radius: 10px; background: #fee2e2; color: #b91c1c; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="fas fa-ban"></i>
+              </div>
+            </div>
+            <div id="statCancelledBookings" style="font-size: 2.2rem; font-weight: 800; color: #b91c1c; font-family: var(--font-heading);">0</div>
+            <small style="color: var(--text-muted); font-size: 0.78rem;">Voided reservations</small>
+          </div>
+
+        </div>
+
+        <!-- 2. Bookings Management Table Section -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-md); margin-bottom: 3rem;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 style="font-size: 1.45rem; color: var(--secondary); margin-bottom: 0.25rem;">
+                <i class="fas fa-list-alt" style="color: var(--primary); margin-right: 8px;"></i> Customer Bookings Management
+              </h2>
+              <p style="font-size: 0.88rem; color: var(--text-muted);">
+                View customer details, room counts, update statuses, or delete reservations.
+              </p>
+            </div>
+
+            <!-- Search & Filter Controls -->
+            <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+              <div style="position: relative; width: 240px;">
+                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 0.85rem;"></i>
+                <input type="text" id="adminSearchInput" class="form-control" placeholder="Search ID, Name, Phone..." style="padding-left: 2.2rem; padding-top: 0.45rem; padding-bottom: 0.45rem; font-size: 0.88rem;">
+              </div>
+
+              <select id="adminStatusFilter" class="form-control" style="width: 160px; padding-top: 0.45rem; padding-bottom: 0.45rem; font-size: 0.88rem; font-weight: 600;">
+                <option value="ALL">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Responsive Data Table -->
+          <div style="overflow-x: auto;">
+            <table class="receipt-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: var(--bg-subtle); text-align: left; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+                  <th style="padding: 0.85rem 1rem;">Booking ID</th>
+                  <th style="padding: 0.85rem 1rem;">Customer</th>
+                  <th style="padding: 0.85rem 1rem;">Services & Team</th>
+                  <th style="padding: 0.85rem 1rem;">Date & Slot</th>
+                  <th style="padding: 0.85rem 1rem;">Total (₹)</th>
+                  <th style="padding: 0.85rem 1rem;">Status</th>
+                  <th style="padding: 0.85rem 1rem; text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminBookingsTableBody">
+                <!-- Dynamically rendered by admin.js -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- 3. Two Columns: Service Price Manager & Contact Messages -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-bottom: 3rem;" class="admin-split-grid">
+          
+          <!-- Column A: Service Prices Management -->
+          <div style="background: #ffffff; border-radius: var(--radius-xl); padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+              <div>
+                <h3 style="font-size: 1.25rem; color: var(--secondary); margin-bottom: 0.2rem;">
+                  <i class="fas fa-tags" style="color: var(--primary); margin-right: 6px;"></i> Manage Service Prices
+                </h3>
+                <small style="color: var(--text-muted);">Edit prices dynamically in Indian Rupees (₹)</small>
+              </div>
+            </div>
+
+            <div id="adminServicesManagerList" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
+              <!-- Dynamically rendered by admin.js with inline price editing and save buttons -->
+            </div>
+          </div>
+
+          <!-- Column B: Contact Form Messages Received -->
+          <div style="background: #ffffff; border-radius: var(--radius-xl); padding: 2rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
+            <div style="margin-bottom: 1.25rem;">
+              <h3 style="font-size: 1.25rem; color: var(--secondary); margin-bottom: 0.2rem;">
+                <i class="fas fa-envelope-open-text" style="color: var(--primary); margin-right: 6px;"></i> Customer Inquiries
+              </h3>
+              <small style="color: var(--text-muted);">Messages submitted through public contact page</small>
+            </div>
+
+            <div style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+                <thead>
+                  <tr style="background: var(--bg-subtle); border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">
+                    <th style="padding: 0.75rem 0.8rem;">Date</th>
+                    <th style="padding: 0.75rem 0.8rem;">Name</th>
+                    <th style="padding: 0.75rem 0.8rem;">Contact</th>
+                    <th style="padding: 0.75rem 0.8rem;">Message</th>
+                    <th style="padding: 0.75rem 0.8rem; text-align:center;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminMessagesTableBody">
+                  <!-- Dynamically rendered by admin.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Admin Booking Details Modal -->
+    <div class="modal-overlay" id="adminBookingDetailModal">
+      <div class="modal-box" style="max-width: 620px;">
+        <div class="modal-header">
+          <h3 style="font-size: 1.25rem; color: var(--secondary);"><i class="fas fa-file-invoice" style="color: var(--primary); margin-right: 8px;"></i> Booking Full Inspection</h3>
+          <button class="modal-close-btn" onclick="closeAdminBookingModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="adminBookingModalBody" style="padding: 1.5rem;">
+          <!-- Populated by admin.js -->
+        </div>
+        <div style="padding: 1rem 1.5rem; background: var(--bg-subtle); border-top: 1px solid var(--border-color); text-align: right;">
+          <button class="btn btn-outline btn-sm" onclick="closeAdminBookingModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Footer -->
+    <footer style="background: #ffffff; border-top: 1px solid var(--border-color); padding: 1.5rem 0; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+      SparkleHome Enterprise Administration Console &bull; Java Spring Boot Security Architecture
+    </footer>
+
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
