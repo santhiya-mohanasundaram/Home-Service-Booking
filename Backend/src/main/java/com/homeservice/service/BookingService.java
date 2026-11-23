@@ -339,8 +339,20 @@ public class BookingService {
         BookingResponse r = new BookingResponse();
         r.setId(b.getId());
         r.setBookingId(b.getBookingId());
-        r.setBookingStatus(b.getBookingStatus());
+        r.setUserId(b.getUserId());
+        r.setCleaningTeamPreference(b.getCleaningTeamPreference());
+        r.setSelectedServices(b.getSelectedServices());
+        r.setRoomCount(b.getRoomCount());
+        r.setBookingDate(b.getBookingDate());
+        r.setBookingTime(b.getBookingTime());
+        r.setCustomerName(b.getCustomerName());
+        r.setMobileNumber(b.getMobileNumber());
+        r.setEmail(b.getEmail());
+        r.setFullAddress(b.getFullAddress());
+        r.setSpecialInstructions(b.getSpecialInstructions());
         r.setTotalAmount(b.getTotalAmount());
+        r.setBookingStatus(b.getBookingStatus());
+        r.setCreatedAt(b.getCreatedAt());
         return r;
     }
 }
