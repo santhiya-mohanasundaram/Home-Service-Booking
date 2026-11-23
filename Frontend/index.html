@@ -48,6 +48,9 @@
 
 <body>
 
+  <!-- Accessible Skip to Main Content Navigation Link -->
+  <a href="#main-content" class="skip-to-content" style="position: absolute; top: -100px; left: 16px; z-index: 9999; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; border-radius: 4px; font-weight: 600; transition: top 0.2s;" onfocus="this.style.top='16px'" onblur="this.style.top='-100px'">Skip to main content</a>
+
   <!-- Site Navigation Bar -->
   <header class="site-header">
     <div class="container">
@@ -88,7 +91,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-curved-bg"></div>
