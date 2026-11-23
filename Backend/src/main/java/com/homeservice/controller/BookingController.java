@@ -126,4 +126,23 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success("Price calculated successfully", Map.of("rooms", rooms, "services", services, "totalPrice", price)));
     }
 
+    /**
+     * Validates a promotional discount coupon.
+     */
+    @GetMapping("/coupon/validate")
+    public ResponseEntity<ApiResponse<CouponValidationResponse>> validateCoupon(@RequestParam String code,
+                                                                                @RequestParam(defaultValue = "1000.0") Double amount) {
+        CouponValidationResponse response = bookingService.validateCoupon(code, amount);
+        return ResponseEntity.ok(ApiResponse.success("Coupon checked", response));
+    }
+
+    /**
+     * Applies a valid coupon to an existing booking.
+     */
+    @PostMapping("/{ref}/coupon")
+    public ResponseEntity<ApiResponse<BookingResponse>> applyCoupon(@PathVariable String ref,
+                                                                    @RequestParam String code) {
+        BookingResponse response = bookingService.applyCoupon(ref, code);
+        return ResponseEntity.ok(ApiResponse.success("Coupon applied to booking", response));
+    }
 }
