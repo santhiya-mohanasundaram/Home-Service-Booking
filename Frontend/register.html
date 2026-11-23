@@ -69,7 +69,7 @@
           </label>
           <div style="position: relative;">
             <i class="fas fa-user" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-            <input type="text" id="regFullName" class="form-control" placeholder="e.g. Rahul Sharma" style="padding-left: 2.5rem;" required>
+            <input type="text" id="regFullName" class="form-control" placeholder="e.g. Rahul Sharma" autocomplete="name" style="padding-left: 2.5rem;" required>
           </div>
         </div>
 
@@ -81,7 +81,7 @@
             </label>
             <div style="position: relative;">
               <i class="fas fa-envelope" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-              <input type="email" id="regEmail" class="form-control" placeholder="name@example.com" style="padding-left: 2.5rem;" required>
+              <input type="email" id="regEmail" class="form-control" placeholder="name@example.com" autocomplete="email" style="padding-left: 2.5rem;" required>
             </div>
           </div>
 
@@ -91,7 +91,7 @@
             </label>
             <div style="position: relative;">
               <i class="fas fa-phone-alt" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-              <input type="tel" id="regMobile" class="form-control" placeholder="10-digit number" maxlength="10" style="padding-left: 2.5rem;" required>
+              <input type="tel" id="regMobile" class="form-control" placeholder="10-digit number" maxlength="10" autocomplete="tel" pattern="[0-9]{10}" inputmode="numeric" title="Please enter a valid 10-digit mobile number" style="padding-left: 2.5rem;" required>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@
           </label>
           <div style="position: relative;">
             <i class="fas fa-lock" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-            <input type="password" id="regPassword" class="form-control" placeholder="Min. 6 characters" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
+            <input type="password" id="regPassword" class="form-control" placeholder="Min. 6 characters" autocomplete="new-password" minlength="6" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
             <button type="button" class="password-toggle-btn" data-target="regPassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" aria-label="Toggle password">
               <i class="fas fa-eye"></i>
             </button>
@@ -122,7 +122,7 @@
           </label>
           <div style="position: relative;">
             <i class="fas fa-shield-alt" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-            <input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-type your password" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
+            <input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-type your password" autocomplete="new-password" minlength="6" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
             <button type="button" class="password-toggle-btn" data-target="regConfirmPassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" aria-label="Toggle password">
               <i class="fas fa-eye"></i>
             </button>
