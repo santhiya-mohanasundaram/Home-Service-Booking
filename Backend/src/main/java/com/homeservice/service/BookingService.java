@@ -274,10 +274,19 @@ public class BookingService {
         return priceService.calculateBookingTotal(servicesStr, roomCount);
     }
 
-
+    /**
+     * Generates a unique, human-readable booking tracking ID.
+     *
+     * @return generated ID (e.g. SH-20261123-A1B2C3)
+     */
     public String generateBookingId() {
-        return "SH-BOOKING-REF";
+        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String randomPart = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        return "SH-" + datePart + "-" + randomPart;
     }
+
+    /**
+     * Validates a promotional discount coupon.
 
     public BookingResponse mapToResponse(Booking b) {
         BookingResponse r = new BookingResponse();
