@@ -1,0 +1,27 @@
+# Dependencies & Build artifacts
+target/
+*.class
+*.jar
+*.war
+
+# Environment & Sensitive configs
+.env
+.env.local
+*.log
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Operating System files
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Local Backups & Clones
+.backup/
+backup/
+Home-Service-Booking/

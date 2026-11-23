@@ -1782,7 +1782,6 @@ textarea.form-control {
   background: #f1f5f9;
   font-weight: 700;
   color: var(--text-main);
-  width: 40%;
 }
 
 .receipt-table td {
@@ -2043,13 +2042,17 @@ textarea.form-control {
 
 /* Status dropdown selector */
 .status-select {
-  padding: 0.35rem 0.65rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.82rem;
-  font-weight: 700;
-  border: 1px solid var(--border-color);
-  background: #fff;
+  min-width: 135px !important;
+  display: inline-block !important;
+  padding: 0.45rem 0.85rem !important;
+  border-radius: var(--radius-pill) !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  border: 1.5px solid var(--border-color);
+  background: #ffffff;
+  color: #1e293b;
   cursor: pointer;
+  text-align: left;
 }
 
 /* ==========================================================================
@@ -2138,10 +2141,11 @@ textarea.form-control {
 }
 
 .toast {
-  background: #ffffff;
+  background: #ffffff !important;
+  color: #0f172a !important;
   border-radius: var(--radius-md);
   padding: 1rem 1.4rem;
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.25);
   border-left: 4px solid var(--primary);
   display: flex;
   align-items: center;
@@ -2151,21 +2155,49 @@ textarea.form-control {
   animation: slideInRight 0.3s ease;
 }
 
+.toast * {
+  color: #0f172a !important;
+}
+
+.toast i {
+  color: inherit !important;
+}
+
 @keyframes slideInRight {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
 
 .toast.toast-error {
-  border-left-color: var(--accent-red);
+  border-left-color: #ef4444 !important;
+}
+
+.toast.toast-error i {
+  color: #ef4444 !important;
 }
 
 .toast.toast-warning {
-  border-left-color: var(--accent-yellow);
+  border-left-color: #f59e0b !important;
+}
+
+.toast.toast-warning i {
+  color: #f59e0b !important;
 }
 
 .toast.toast-success {
-  border-left-color: var(--primary);
+  border-left-color: #10b981 !important;
+}
+
+.toast.toast-success i {
+  color: #10b981 !important;
+}
+
+.toast.toast-info {
+  border-left-color: #0284c7 !important;
+}
+
+.toast.toast-info i {
+  color: #0284c7 !important;
 }
 
 /* ==========================================================================

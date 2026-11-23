@@ -35,44 +35,89 @@ document.addEventListener("DOMContentLoaded", () => {
 // Admin Login Form Handler
 function setupAdminLoginForm() {
   const form = document.getElementById("adminLoginForm");
-  const fillBtn = document.getElementById("fillDemoAdminBtn");
+  const fillHomeserviceBtn = document.getElementById("fillDemoAdminBtn");
+  const fillSparkleBtn = document.getElementById("fillSparkleAdminBtn");
 
-  if (fillBtn) {
-    fillBtn.addEventListener("click", () => {
+  if (fillHomeserviceBtn) {
+    fillHomeserviceBtn.addEventListener("click", () => {
       document.getElementById("adminEmail").value = "admin@homeservice.com";
       document.getElementById("adminPassword").value = "Admin@123";
-      showToast("Admin credentials filled!", "info");
+      showToast("Credentials filled for admin@homeservice.com", "info");
+    });
+  }
+
+  if (fillSparkleBtn) {
+    fillSparkleBtn.addEventListener("click", () => {
+      document.getElementById("adminEmail").value = "admin@sparklehome.com";
+      document.getElementById("adminPassword").value = "Admin@Sparkle2026";
+      showToast("Credentials filled for admin@sparklehome.com", "info");
     });
   }
 
   if (form) {
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("adminEmail").value.trim().toLowerCase();
       const password = document.getElementById("adminPassword").value;
 
-      const adminCred = JSON.parse(localStorage.getItem("shc_admin_credential")) || {
-        email: "admin@homeservice.com",
-        password: "Admin@123",
-        role: "ROLE_ADMIN"
-      };
+      if (!email || !password) {
+        showToast("Please enter your admin email and password.", "error");
+        return;
+      }
 
-      if (email === adminCred.email.toLowerCase() && password === adminCred.password) {
-        // Create secure mock admin session
+      // Valid official administrative credentials
+      const validAdminAccounts = [
+        { email: "admin@homeservice.com", password: "Admin@123" },
+        { email: "admin@sparklehome.com", password: "Admin@Sparkle2026" }
+      ];
+
+      // Also check stored custom credential if any
+      const storedAdmin = JSON.parse(localStorage.getItem("shc_admin_credential") || "null");
+      if (storedAdmin && storedAdmin.email && storedAdmin.password) {
+        validAdminAccounts.push({
+          email: storedAdmin.email.toLowerCase(),
+          password: storedAdmin.password
+        });
+      }
+
+      const isMatch = validAdminAccounts.some(
+        acc => acc.email.toLowerCase() === email && acc.password === password
+      );
+
+      let jwtToken = "jwt_mock_admin_token_" + Date.now();
+
+      // Attempt live backend JWT authentication if backend is active
+      try {
+        const response = await fetch("http://localhost:8080/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, password: password })
+        });
+        if (response.ok) {
+          const resData = await response.json();
+          if (resData && resData.data && resData.data.token) {
+            jwtToken = resData.data.token;
+          }
+        }
+      } catch (backendErr) {
+        // Backend offline; proceed with validated credential
+      }
+
+      if (isMatch || jwtToken.startsWith("ey")) {
         const adminSession = {
-          email: adminCred.email,
+          email: email,
           role: "ROLE_ADMIN",
-          token: "jwt_mock_admin_token_" + Date.now(),
+          token: jwtToken,
           loginTime: new Date().toISOString()
         };
 
         sessionStorage.setItem("shc_admin_session", JSON.stringify(adminSession));
         localStorage.setItem("shc_admin_session", JSON.stringify(adminSession));
 
-        showToast("Admin authenticated successfully!", "success");
+        showToast("Admin authenticated successfully! Redirecting...", "success");
         setTimeout(() => {
           window.location.href = "admin-dashboard.html";
-        }, 800);
+        }, 600);
       } else {
         showToast("Access Denied: Invalid admin credentials.", "error");
       }
@@ -116,43 +161,129 @@ function verifyAdminAccess() {
   }
 }
 
-// 1. Render Admin KPI Statistics Cards
-function renderAdminStats() {
+// Helper to escape HTML characters
+function escapeHtml(text) {
+  if (!text) return "";
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+// 1. Render Admin KPI Statistics Cards (Synced with Spring Boot / LocalStorage)
+async function renderAdminStats() {
+  const adminSession = getAdminSession();
+  if (adminSession && adminSession.token) {
+    try {
+      const res = await fetch("http://localhost:8080/api/admin/dashboard", {
+        headers: { "Authorization": `Bearer ${adminSession.token}` }
+      });
+      if (res.ok) {
+        const resData = await res.json();
+        if (resData && resData.data) {
+          const d = resData.data;
+          const statTotal = document.getElementById("statTotalBookings");
+          const statPending = document.getElementById("statPendingBookings");
+          const statConfirmed = document.getElementById("statConfirmedBookings");
+          const statCompleted = document.getElementById("statCompletedBookings");
+          const statCancelled = document.getElementById("statCancelledBookings");
+
+          if (statTotal) statTotal.textContent = d.totalBookings || 0;
+          if (statPending) statPending.textContent = d.pendingBookings || 0;
+          if (statConfirmed) statConfirmed.textContent = d.confirmedBookings || 0;
+          if (statCompleted) statCompleted.textContent = d.completedBookings || 0;
+          if (statCancelled) statCancelled.textContent = d.cancelledBookings || 0;
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Backend admin dashboard fetch fallback:", e);
+    }
+  }
+
   const bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
 
   const total = bookings.length;
-  const pending = bookings.filter(b => b.status === "Pending").length;
-  const confirmed = bookings.filter(b => b.status === "Confirmed").length;
-  const completed = bookings.filter(b => b.status === "Completed").length;
-  const cancelled = bookings.filter(b => b.status === "Cancelled").length;
+  const pending = bookings.filter(b => (b.status || "").toUpperCase() === "PENDING").length;
+  const confirmed = bookings.filter(b => (b.status || "").toUpperCase() === "CONFIRMED").length;
+  const completed = bookings.filter(b => (b.status || "").toUpperCase() === "COMPLETED").length;
+  const cancelled = bookings.filter(b => (b.status || "").toUpperCase() === "CANCELLED").length;
 
-  document.getElementById("statTotalBookings").textContent = total;
-  document.getElementById("statPendingBookings").textContent = pending;
-  document.getElementById("statConfirmedBookings").textContent = confirmed;
-  document.getElementById("statCompletedBookings").textContent = completed;
-  document.getElementById("statCancelledBookings").textContent = cancelled;
+  const statTotal = document.getElementById("statTotalBookings");
+  const statPending = document.getElementById("statPendingBookings");
+  const statConfirmed = document.getElementById("statConfirmedBookings");
+  const statCompleted = document.getElementById("statCompletedBookings");
+  const statCancelled = document.getElementById("statCancelledBookings");
+
+  if (statTotal) statTotal.textContent = total;
+  if (statPending) statPending.textContent = pending;
+  if (statConfirmed) statConfirmed.textContent = confirmed;
+  if (statCompleted) statCompleted.textContent = completed;
+  if (statCancelled) statCancelled.textContent = cancelled;
 }
 
-// 2. Render All Bookings in responsive Data Table
-function renderBookingsTable(filterStatus = "ALL", searchQuery = "") {
+// 2. Render All Bookings in responsive Data Table (Synced with Backend /api/admin/bookings)
+async function renderBookingsTable(filterStatus = "ALL", searchQuery = "") {
   const tbody = document.getElementById("adminBookingsTableBody");
   if (!tbody) return;
 
+  const adminSession = getAdminSession();
+  if (adminSession && adminSession.token) {
+    try {
+      const res = await fetch("http://localhost:8080/api/admin/bookings", {
+        headers: { "Authorization": `Bearer ${adminSession.token}` }
+      });
+      if (res.ok) {
+        const resData = await res.json();
+        if (resData && resData.data && Array.isArray(resData.data)) {
+          const backendBookings = resData.data.map(b => {
+            const rawStatus = b.bookingStatus || "PENDING";
+            const displayStatus = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase();
+            return {
+              id: b.bookingId,
+              backendId: b.id,
+              userId: b.userId,
+              customerName: b.customerName,
+              customerMobile: b.mobileNumber,
+              customerEmail: b.email,
+              customerAddress: b.fullAddress,
+              teamPreference: b.cleaningTeamPreference,
+              selectedServices: b.servicesSummary ? b.servicesSummary.split(", ").map((s, idx) => ({ id: idx + 1, name: s, price: 999 })) : [],
+              roomCount: b.roomCount,
+              bookingDate: b.bookingDate,
+              bookingTime: b.bookingTime,
+              totalAmount: b.totalAmount,
+              status: displayStatus,
+              createdAt: b.createdAt
+            };
+          });
+          localStorage.setItem("shc_bookings", JSON.stringify(backendBookings));
+        }
+      }
+    } catch (e) {
+      console.warn("Backend admin bookings fetch fallback:", e);
+    }
+  }
+
   let bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
 
-  // Filter by status
-  if (filterStatus !== "ALL") {
-    bookings = bookings.filter(b => b.status === filterStatus);
+  // Filter by status (Case-insensitive check)
+  if (filterStatus && filterStatus.toUpperCase() !== "ALL") {
+    bookings = bookings.filter(b => (b.status || "").toUpperCase() === filterStatus.toUpperCase());
   }
 
   // Filter by search query (id, customer name, mobile, email)
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
-    bookings = bookings.filter(b => 
-      b.id.toLowerCase().includes(q) ||
-      b.customerName.toLowerCase().includes(q) ||
-      b.customerMobile.includes(q) ||
-      b.customerEmail.toLowerCase().includes(q)
+    bookings = bookings.filter(b =>
+      (b.id || "").toLowerCase().includes(q) ||
+      (b.customerName || "").toLowerCase().includes(q) ||
+      (b.customerMobile || "").includes(q) ||
+      (b.customerEmail || "").toLowerCase().includes(q)
     );
   }
 
@@ -169,45 +300,52 @@ function renderBookingsTable(filterStatus = "ALL", searchQuery = "") {
   }
 
   tbody.innerHTML = bookings.map(b => {
-    let badgeClass = "badge-primary";
-    if (b.status === "Pending") badgeClass = "badge-warning";
-    if (b.status === "Confirmed") badgeClass = "badge-success";
-    if (b.status === "Completed") badgeClass = "badge-primary";
-    if (b.status === "Cancelled") badgeClass = "badge-danger";
+    const normStatus = (b.status || "Pending").toUpperCase();
+    let displayStatus = "Pending";
+    if (normStatus === "CONFIRMED") displayStatus = "Confirmed";
+    else if (normStatus === "COMPLETED") displayStatus = "Completed";
+    else if (normStatus === "CANCELLED") displayStatus = "Cancelled";
 
-    const servicesNames = b.selectedServices.map(s => s.name).join(", ");
+    let selectStyle = "min-width:135px; width:100%; display:inline-block; font-weight:700; padding:0.45rem 0.85rem; border-radius:20px; cursor:pointer; outline:none; transition:all 0.2s; font-size:0.88rem; ";
+    if (normStatus === "PENDING") selectStyle += "background:#fef3c7; color:#92400e; border:1.5px solid #fcd34d;";
+    else if (normStatus === "CONFIRMED") selectStyle += "background:#e0f2fe; color:#0369a1; border:1.5px solid #bae6fd;";
+    else if (normStatus === "COMPLETED") selectStyle += "background:#dcfce7; color:#15803d; border:1.5px solid #86efac;";
+    else if (normStatus === "CANCELLED") selectStyle += "background:#fee2e2; color:#b91c1c; border:1.5px solid #fca5a5;";
+    else selectStyle += "background:#ffffff; color:#334155; border:1.5px solid #cbd5e1;";
+
+    const servicesNames = b.selectedServices ? b.selectedServices.map(s => s.name).join(", ") : "Standard Cleaning";
 
     return `
       <tr id="row-booking-${b.id}">
         <td>
-          <strong style="color:var(--secondary); font-family:monospace; font-size:0.95rem;">${b.id}</strong>
-          <div style="font-size:0.8rem; color:var(--text-muted);">${new Date(b.createdAt).toLocaleDateString()}</div>
+          <strong style="color:var(--secondary); font-family:monospace; font-size:0.95rem;">${escapeHtml(b.id)}</strong>
+          <div style="font-size:0.8rem; color:var(--text-muted);">${b.createdAt ? new Date(b.createdAt).toLocaleDateString() : 'Recent'}</div>
         </td>
         <td>
-          <strong>${b.customerName}</strong>
+          <strong>${escapeHtml(b.customerName)}</strong>
           <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
-            <i class="fas fa-phone-alt" style="font-size:0.75rem; color:var(--primary);"></i> ${b.customerMobile}
+            <i class="fas fa-phone-alt" style="font-size:0.75rem; color:var(--primary);"></i> ${escapeHtml(b.customerMobile)}
           </div>
         </td>
         <td>
-          <div style="font-size:0.88rem; font-weight:600; max-width:200px;">${servicesNames}</div>
+          <div style="font-size:0.88rem; font-weight:600; max-width:200px;">${escapeHtml(servicesNames)}</div>
           <div style="font-size:0.8rem; color:var(--primary); font-weight:700;">
-            ${b.roomCount} Room(s) &bull; ${b.teamPreference || "Any"} Cleaner
+            ${b.roomCount || 1} Room(s) &bull; ${escapeHtml(b.teamPreference || "Any")} Cleaner
           </div>
         </td>
         <td>
-          <div><strong>${b.bookingDate}</strong></div>
-          <div style="font-size:0.82rem; color:var(--text-muted);">${b.bookingTime}</div>
+          <div><strong>${escapeHtml(b.bookingDate || "")}</strong></div>
+          <div style="font-size:0.82rem; color:var(--text-muted);">${escapeHtml(b.bookingTime || "")}</div>
         </td>
         <td>
           <strong style="color:var(--primary); font-size:1.05rem;">${formatINR(b.totalAmount)}</strong>
         </td>
-        <td>
-          <select class="status-select" onchange="handleUpdateBookingStatus('${b.id}', this.value)" style="font-weight:700;">
-            <option value="Pending" ${b.status === "Pending" ? "selected" : ""}>Pending</option>
-            <option value="Confirmed" ${b.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
-            <option value="Completed" ${b.status === "Completed" ? "selected" : ""}>Completed</option>
-            <option value="Cancelled" ${b.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+        <td style="min-width: 150px; width: 150px;">
+          <select class="status-select" onchange="handleUpdateBookingStatus('${b.id}', this.value)" style="${selectStyle}">
+            <option value="Pending" ${normStatus === "PENDING" ? "selected" : ""}>Pending</option>
+            <option value="Confirmed" ${normStatus === "CONFIRMED" ? "selected" : ""}>Confirmed</option>
+            <option value="Completed" ${normStatus === "COMPLETED" ? "selected" : ""}>Completed</option>
+            <option value="Cancelled" ${normStatus === "CANCELLED" ? "selected" : ""}>Cancelled</option>
           </select>
         </td>
         <td>
@@ -225,15 +363,37 @@ function renderBookingsTable(filterStatus = "ALL", searchQuery = "") {
   }).join("");
 }
 
-// Update Booking Status
+// Update Booking Status with Instant Counter Update
 function handleUpdateBookingStatus(bookingId, newStatus) {
   const bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
   const target = bookings.find(b => b.id === bookingId);
   if (target) {
-    target.status = newStatus;
+    const formattedStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1).toLowerCase();
+    target.status = formattedStatus;
     localStorage.setItem("shc_bookings", JSON.stringify(bookings));
-    showToast(`Booking ${bookingId} status updated to ${newStatus}.`, "success");
+
+    // Also update backend
+    try {
+      const adminSession = getAdminSession();
+      const targetRef = target.backendId || target.id || bookingId;
+      if (adminSession && adminSession.token) {
+        fetch(`http://localhost:8080/api/admin/bookings/${encodeURIComponent(targetRef)}/status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${adminSession.token}`
+          },
+          body: JSON.stringify({ status: formattedStatus.toUpperCase() })
+        }).catch(() => { });
+      }
+    } catch (e) { }
+
+    showToast(`Booking ${bookingId} status updated to ${formattedStatus}.`, "success");
+    // Immediate reactive count recalculation
     renderAdminStats();
+    const filterEl = document.getElementById("adminStatusFilter");
+    const searchEl = document.getElementById("adminSearchInput");
+    renderBookingsTable(filterEl ? filterEl.value : "ALL", searchEl ? searchEl.value.trim() : "");
   }
 }
 
@@ -249,7 +409,9 @@ function handleDeleteBooking(bookingId) {
 
   showToast(`Booking ${bookingId} deleted.`, "info");
   renderAdminStats();
-  renderBookingsTable();
+  const filterEl = document.getElementById("adminStatusFilter");
+  const searchEl = document.getElementById("adminSearchInput");
+  renderBookingsTable(filterEl ? filterEl.value : "ALL", searchEl ? searchEl.value.trim() : "");
 }
 
 // View Full Booking Details in Modal
@@ -370,35 +532,73 @@ function handleSaveServicePrice(serviceId) {
   }
 }
 
-// 4. View Contact Messages
-function renderContactMessagesTable() {
+// 4. View Contact Messages (Strict Persistence & Backend Sync)
+async function renderContactMessagesTable() {
   const tbody = document.getElementById("adminMessagesTableBody");
   if (!tbody) return;
 
-  const messages = JSON.parse(localStorage.getItem("shc_messages")) || [];
+  // Try backend sync if admin session token exists
+  try {
+    const adminSession = getAdminSession();
+    if (adminSession && adminSession.token) {
+      const resp = await fetch("http://localhost:8080/api/admin/contact-messages", {
+        headers: { "Authorization": `Bearer ${adminSession.token}` }
+      });
+      if (resp.ok) {
+        const body = await resp.json();
+        if (body && body.data && body.data.length > 0) {
+          const synced = body.data.map(m => ({
+            id: m.id,
+            name: m.name,
+            email: m.email,
+            phone: m.phone || "N/A",
+            message: m.message,
+            createdAt: m.createdAt || new Date().toISOString()
+          }));
+          localStorage.setItem("shc_messages", JSON.stringify(synced));
+        }
+      }
+    }
+  } catch (err) {
+    // Graceful offline fallback
+  }
 
-  if (messages.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">
-          No messages received yet.
-        </td>
-      </tr>
-    `;
-    return;
+  let messages = JSON.parse(localStorage.getItem("shc_messages") || "[]");
+
+  // Fallback seed if empty
+  if (!messages || messages.length === 0) {
+    messages = [
+      {
+        id: 1,
+        name: "Sunita Roy",
+        email: "sunita.roy@gmail.com",
+        phone: "9823114455",
+        message: "Do you offer post-renovation paint stain removal for full apartments?",
+        createdAt: "2026-11-14T16:20:00Z"
+      },
+      {
+        id: 2,
+        name: "Rajesh Khanna",
+        email: "rajesh.k@gmail.com",
+        phone: "9811223344",
+        message: "Need weekend kitchen & bathroom deep cleaning in Bengaluru.",
+        createdAt: "2026-11-17T11:45:00Z"
+      }
+    ];
+    localStorage.setItem("shc_messages", JSON.stringify(messages));
   }
 
   tbody.innerHTML = messages.map(m => `
     <tr>
-      <td>${new Date(m.createdAt).toLocaleDateString()}</td>
-      <td><strong>${m.name}</strong></td>
+      <td>${m.createdAt ? new Date(m.createdAt).toLocaleDateString() : "Recent"}</td>
+      <td><strong>${escapeHtml(m.name)}</strong></td>
       <td>
-        <div>${m.email}</div>
-        <small style="color:var(--text-muted);">${m.phone}</small>
+        <div>${escapeHtml(m.email)}</div>
+        <small style="color:var(--text-muted);">${escapeHtml(m.phone || "N/A")}</small>
       </td>
-      <td style="max-width:300px;">${m.message}</td>
-      <td>
-        <button class="btn btn-outline btn-sm" style="color:var(--accent-red);" onclick="handleDeleteMessage(${m.id})">
+      <td style="max-width:300px;">${escapeHtml(m.message)}</td>
+      <td style="text-align:center;">
+        <button class="btn btn-outline btn-sm" style="color:var(--accent-red);" onclick="handleDeleteMessage(${m.id})" title="Delete inquiry">
           <i class="fas fa-trash-alt"></i>
         </button>
       </td>
@@ -407,10 +607,10 @@ function renderContactMessagesTable() {
 }
 
 function handleDeleteMessage(messageId) {
-  let messages = JSON.parse(localStorage.getItem("shc_messages")) || [];
+  let messages = JSON.parse(localStorage.getItem("shc_messages") || "[]");
   messages = messages.filter(m => m.id !== messageId);
   localStorage.setItem("shc_messages", JSON.stringify(messages));
-  showToast("Message deleted.", "info");
+  showToast("Inquiry message deleted.", "info");
   renderContactMessagesTable();
 }
 

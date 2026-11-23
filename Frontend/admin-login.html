@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,19 +11,26 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
 </head>
-<body style="background: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+<body style="background: #83dde3; color: #1c1d1e; min-height: 100vh; display: flex; flex-direction: column;">
 
   <!-- Minimal Dark Header for Staff/Admin Portal -->
-  <header style="background: #1e293b; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 1.25rem 0;">
+  <header style="background: #83dde3; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 1.25rem 0;">
     <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
       <a href="index.html" class="brand-logo" style="color: #ffffff;">
-        <div class="logo-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-shield-alt"></i></div>
-        <div class="brand-text" style="color:#fff;">Sparkle<span>Home</span> <small style="font-size: 0.75rem; background: #ef4444; color:#fff; padding: 2px 8px; border-radius: 9999px; margin-left: 6px;">ADMIN ONLY</small></div>
+        <div class="logo-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i
+            class="fas fa-shield-alt"></i></div>
+        <div class="brand-text" style="color:#fff;">Sparkle<span>Home</span> <small
+            style="font-size: 0.75rem; background: #ef4444; color:#fff; padding: 2px 8px; border-radius: 9999px; margin-left: 6px;">ADMIN
+            ONLY</small></div>
       </a>
       <div>
-        <a href="index.html" style="color: #94a3b8; font-size: 0.9rem; text-decoration: none; display: flex; align-items: center; gap: 0.4rem;">
+        <a href="index.html"
+          style="color: #94a3b8; font-size: 0.9rem; text-decoration: none; display: flex; align-items: center; gap: 0.4rem;">
           <i class="fas fa-arrow-left"></i> Back to Main Site
         </a>
       </div>
@@ -30,11 +38,13 @@
   </header>
 
   <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 3rem 1.5rem;">
-    <div style="width: 100%; max-width: 480px; background: #1e293b; border-radius: var(--radius-xl); padding: 2.75rem 2.25rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);">
-      
+    <div
+      style="width: 100%; max-width: 480px; background: #1e293b; border-radius: var(--radius-xl); padding: 2.75rem 2.25rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);">
+
       <!-- Security Badge -->
       <div style="text-align: center; margin-bottom: 2rem;">
-        <div style="width: 64px; height: 64px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.25rem; border: 1px solid rgba(239, 68, 68, 0.3);">
+        <div
+          style="width: 64px; height: 64px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.25rem; border: 1px solid rgba(239, 68, 68, 0.3);">
           <i class="fas fa-user-shield"></i>
         </div>
         <h1 style="font-size: 1.85rem; color: #ffffff; margin-bottom: 0.4rem;">Staff & Admin Login</h1>
@@ -44,46 +54,65 @@
       </div>
 
       <!-- Spring Boot Backend Security Notice -->
-      <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.5rem;">
+      <div
+        style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.5rem;">
         <div style="font-size: 0.82rem; color: #fca5a5; line-height: 1.5;">
           <strong><i class="fas fa-lock"></i> Strict Admin Guard:</strong>
-          Normal customer accounts cannot access the admin panel. In production, this authentication will be guarded by Java Spring Boot + Spring Security JWT with role <code>ROLE_ADMIN</code>.
+          Normal customer accounts cannot access the admin panel. In production, this authentication will be guarded by
+          Java Spring Boot + Spring Security JWT with role <code>ROLE_ADMIN</code>.
         </div>
       </div>
 
-      <!-- Demo Admin Credentials Autofill Helper -->
-      <div style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
-        <div style="font-size: 0.82rem; color: #cbd5e1;">
-          <strong style="color: #38bdf8;"><i class="fas fa-key"></i> Demo Admin:</strong> admin@homeservice.com / Admin@123
+      <!-- Authorized Admins & Autofill Helper -->
+      <div
+        style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem;">
+        <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.5;">
+          <strong style="color: #38bdf8;"><i class="fas fa-key"></i> Authorized Admins:</strong><br>
+          <span style="display:inline-block; margin-top:2px;">admin@homeservice.com (Admin@123)</span><br>
+          <span style="display:inline-block; margin-top:2px;">admin@sparklehome.com (Admin@Sparkle2026)</span>
         </div>
-        <button type="button" id="fillDemoAdminBtn" class="btn btn-outline btn-sm" style="color: #38bdf8; border-color: #38bdf8; padding: 0.2rem 0.6rem; font-size: 0.75rem;">
-          Autofill
-        </button>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" id="fillDemoAdminBtn" class="btn btn-outline btn-sm"
+            style="color: #38bdf8; border-color: #38bdf8; padding: 0.25rem 0.65rem; font-size: 0.75rem;">
+            Autofill (homeservice)
+          </button>
+          <button type="button" id="fillSparkleAdminBtn" class="btn btn-outline btn-sm"
+            style="color: #34d399; border-color: #34d399; padding: 0.25rem 0.65rem; font-size: 0.75rem;">
+            Autofill (sparklehome)
+          </button>
+        </div>
       </div>
 
       <!-- Admin Login Form -->
       <form id="adminLoginForm" novalidate>
         <div class="form-group" style="margin-bottom: 1.25rem;">
-          <label for="adminEmail" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem; color: #e2e8f0;">
+          <label for="adminEmail"
+            style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem; color: #e2e8f0;">
             Admin Email *
           </label>
           <div style="position: relative;">
-            <i class="fas fa-envelope" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
-            <input type="email" id="adminEmail" class="form-control" placeholder="admin@homeservice.com" style="background: #0f172a; border-color: #334155; color: #ffffff; padding-left: 2.5rem;" required>
+            <i class="fas fa-envelope"
+              style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+            <input type="email" id="adminEmail" class="form-control" placeholder="admin@homeservice.com"
+              style="background: #0f172a; border-color: #334155; color: #ffffff; padding-left: 2.5rem;" required>
           </div>
         </div>
 
         <div class="form-group" style="margin-bottom: 1.75rem;">
-          <label for="adminPassword" style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem; color: #e2e8f0;">
+          <label for="adminPassword"
+            style="display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.4rem; color: #e2e8f0;">
             Security Password *
           </label>
           <div style="position: relative;">
-            <i class="fas fa-lock" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
-            <input type="password" id="adminPassword" class="form-control" placeholder="Enter administrative password" style="background: #0f172a; border-color: #334155; color: #ffffff; padding-left: 2.5rem;" required>
+            <i class="fas fa-lock"
+              style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+            <input type="password" id="adminPassword" class="form-control" placeholder="Enter administrative password"
+              style="background: #0f172a; border-color: #334155; color: #ffffff; padding-left: 2.5rem;" required>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: #ef4444; border-color: #ef4444;">
+        <button type="submit" class="btn btn-primary btn-block btn-lg"
+          style="background: #ef4444; border-color: #ef4444;">
           <i class="fas fa-sign-in-alt"></i> Access Admin Dashboard
         </button>
 
@@ -95,11 +124,13 @@
     </div>
   </main>
 
-  <footer style="background: #0b1120; padding: 1.25rem 0; text-align: center; font-size: 0.8rem; color: #64748b; border-top: 1px solid rgba(255,255,255,0.05);">
+  <footer
+    style="background: #0b1120; padding: 1.25rem 0; text-align: center; font-size: 0.8rem; color: #64748b; border-top: 1px solid rgba(255,255,255,0.05);">
     SparkleHome Administrative Console &bull; Security Level: High &bull; Java Spring Boot Architecture Ready
   </footer>
 
   <script src="js/main.js"></script>
   <script src="js/admin.js"></script>
 </body>
+
 </html>

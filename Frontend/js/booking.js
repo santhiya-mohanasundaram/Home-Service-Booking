@@ -125,6 +125,192 @@ function initBookingForm() {
   if (finalConfirmBtn) {
     finalConfirmBtn.addEventListener("click", executeBookingConfirmation);
   }
+
+  // Initialize User Bookings & Handle Hash Navigation
+  loadUserBookingsList();
+  if (window.location.hash === "#my-bookings") {
+    switchBookingView("MY_BOOKINGS");
+  }
+}
+
+// ==========================================
+// User Bookings & Tab Switching System
+// ==========================================
+function switchBookingView(view) {
+  const newView = document.getElementById("newBookingView");
+  const myView = document.getElementById("myBookingsView");
+  const tabNewBtn = document.getElementById("tabNewBookingBtn");
+  const tabMyBtn = document.getElementById("tabMyBookingsBtn");
+
+  if (view === "MY_BOOKINGS") {
+    if (newView) newView.style.display = "none";
+    if (myView) myView.style.display = "block";
+    if (tabNewBtn) tabNewBtn.className = "btn btn-outline";
+    if (tabMyBtn) tabMyBtn.className = "btn btn-primary";
+    window.location.hash = "my-bookings";
+    loadUserBookingsList();
+  } else {
+    if (newView) newView.style.display = "grid";
+    if (myView) myView.style.display = "none";
+    if (tabNewBtn) tabNewBtn.className = "btn btn-primary";
+    if (tabMyBtn) tabMyBtn.className = "btn btn-outline";
+    if (window.location.hash === "#my-bookings") {
+      history.replaceState(null, null, "booking.html");
+    }
+  }
+}
+
+async function loadUserBookingsList(forceToast = false) {
+  const container = document.getElementById("userBookingsListContainer");
+  const countBadge = document.getElementById("userBookingsBadgeCount");
+  if (!container) return;
+
+  const currentUser = getCurrentUser();
+
+  // Fetch live bookings from Spring Boot backend if user is authenticated
+  if (currentUser && currentUser.token) {
+    try {
+      const res = await fetch("http://localhost:8080/api/bookings/my", {
+        headers: { "Authorization": `Bearer ${currentUser.token}` }
+      });
+      if (res.ok) {
+        const respData = await res.json();
+        if (respData && respData.data && Array.isArray(respData.data)) {
+          const backendBookings = respData.data.map(b => {
+            const rawStatus = b.bookingStatus || "PENDING";
+            const displayStatus = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase();
+            return {
+              id: b.bookingId,
+              backendId: b.id,
+              userId: b.userId,
+              customerName: b.customerName,
+              customerMobile: b.mobileNumber,
+              customerEmail: b.email,
+              customerAddress: b.fullAddress,
+              teamPreference: b.cleaningTeamPreference,
+              selectedServices: b.servicesSummary ? b.servicesSummary.split(", ").map((s, idx) => ({ id: idx + 1, name: s, price: 999 })) : [],
+              roomCount: b.roomCount,
+              bookingDate: b.bookingDate,
+              bookingTime: b.bookingTime,
+              totalAmount: b.totalAmount,
+              status: displayStatus,
+              createdAt: b.createdAt
+            };
+          });
+
+          // Sync with local storage
+          let localBookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
+          backendBookings.forEach(bb => {
+            const idx = localBookings.findIndex(lb => lb.id === bb.id || (lb.backendId && lb.backendId === bb.backendId));
+            if (idx >= 0) {
+              localBookings[idx] = { ...localBookings[idx], ...bb, status: bb.status };
+            } else {
+              localBookings.unshift(bb);
+            }
+          });
+          localStorage.setItem("shc_bookings", JSON.stringify(localBookings));
+        }
+      }
+    } catch (e) {
+      console.warn("Backend offline or unable to load /api/bookings/my:", e);
+    }
+  }
+
+  let bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
+
+  // If user is logged in, filter their relevant bookings
+  if (currentUser && currentUser.email) {
+    const userBookings = bookings.filter(b =>
+      (b.customerEmail && b.customerEmail.toLowerCase() === currentUser.email.toLowerCase()) ||
+      (b.email && b.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+      (b.userId && currentUser.id && b.userId == currentUser.id)
+    );
+    if (userBookings.length > 0) {
+      bookings = userBookings;
+    }
+  }
+
+  if (countBadge) countBadge.textContent = bookings.length;
+
+  if (bookings.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+        <i class="fas fa-calendar-times" style="font-size: 2.8rem; color: #cbd5e1; margin-bottom: 0.85rem; display: block;"></i>
+        <h4 style="color: var(--secondary); margin-bottom: 0.35rem; font-size: 1.25rem;">No Bookings Recorded Yet</h4>
+        <p style="font-size: 0.92rem; margin-bottom: 1.5rem;">You haven't scheduled any cleaning appointments under this account.</p>
+        <button type="button" class="btn btn-primary btn-sm" onclick="switchBookingView('NEW')">
+          <i class="fas fa-plus-circle"></i> Create Your First Booking
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="overflow-x: auto;">
+      <table class="receipt-table" style="width: 100%; border-collapse: collapse; min-width: 650px;">
+        <thead>
+          <tr style="background: var(--bg-subtle); border-bottom: 2px solid var(--border-color); text-align: left;">
+            <th style="padding: 0.85rem 1rem;">Booking ID & Date</th>
+            <th style="padding: 0.85rem 1rem;">Services & Assigned Team</th>
+            <th style="padding: 0.85rem 1rem;">Schedule Slot</th>
+            <th style="padding: 0.85rem 1rem;">Total (₹)</th>
+            <th style="padding: 0.85rem 1rem;">Current Status</th>
+            <th style="padding: 0.85rem 1rem; text-align: center;">Official Receipt</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bookings.map(b => {
+    const status = b.status || "Pending";
+    let statusBadge = '<span class="badge badge-warning" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;"><i class="fas fa-clock"></i> Pending</span>';
+    if (status.toLowerCase() === "completed") {
+      statusBadge = '<span class="badge badge-success" style="font-size: 0.85rem; padding: 0.35rem 0.75rem; background: #dcfce7; color: #15803d; border: 1px solid #86efac;"><i class="fas fa-check-circle"></i> Completed</span>';
+    } else if (status.toLowerCase() === "confirmed") {
+      statusBadge = '<span class="badge badge-primary" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;"><i class="fas fa-check"></i> Confirmed</span>';
+    } else if (status.toLowerCase() === "cancelled") {
+      statusBadge = '<span class="badge badge-danger" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;"><i class="fas fa-times-circle"></i> Cancelled</span>';
+    }
+
+    const services = b.selectedServices ? b.selectedServices.map(s => s.name).join(", ") : "Standard Cleaning";
+
+    return `
+              <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 0.85rem 1rem;">
+                  <strong style="color: var(--secondary); font-family: monospace; font-size: 0.95rem;">${b.id}</strong>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">${new Date(b.createdAt || Date.now()).toLocaleDateString()}</div>
+                </td>
+                <td style="padding: 0.85rem 1rem;">
+                  <div style="font-weight: 600; font-size: 0.92rem; color: var(--text-main);">${services}</div>
+                  <div style="font-size: 0.8rem; color: var(--primary); font-weight: 700; margin-top: 2px;">
+                    ${b.roomCount || 1} Room(s) &bull; ${b.teamPreference || "Female"} Staff
+                  </div>
+                </td>
+                <td style="padding: 0.85rem 1rem;">
+                  <div style="font-weight: 600;">${b.bookingDate}</div>
+                  <div style="font-size: 0.82rem; color: var(--text-muted);">${b.bookingTime}</div>
+                </td>
+                <td style="padding: 0.85rem 1rem;">
+                  <strong style="color: var(--primary); font-size: 1.05rem;">${formatINR(b.totalAmount)}</strong>
+                </td>
+                <td style="padding: 0.85rem 1rem;">
+                  ${statusBadge}
+                </td>
+                <td style="padding: 0.85rem 1rem; text-align: center;">
+                  <a href="confirmation.html?id=${b.id}" class="btn btn-outline-primary btn-sm" style="white-space: nowrap;">
+                    <i class="fas fa-file-invoice"></i> View Receipt
+                  </a>
+                </td>
+              </tr>
+            `;
+  }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  if (forceToast) {
+    showToast("Booking status refreshed successfully!", "success");
+  }
 }
 
 // Team Selector: Male & Female ONLY
@@ -268,7 +454,7 @@ function setupTimeSlots() {
 function calculatePricing() {
   const services = getAppServices();
   const selected = services.filter(s => bookingState.selectedServiceIds.has(s.id));
-  
+
   let baseSum = 0;
   selected.forEach(s => {
     baseSum += s.price;
@@ -391,8 +577,8 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// Step 4: Final Booking Confirmation & Persistence
-function executeBookingConfirmation() {
+// Step 4: Final Booking Confirmation & Persistence (Connected to Spring Boot API)
+async function executeBookingConfirmation() {
   const currentUser = getCurrentUser();
   const pricing = calculatePricing();
 
@@ -405,20 +591,59 @@ function executeBookingConfirmation() {
     userId: currentUser ? currentUser.id : null,
     customerName: bookingState.customerName,
     customerMobile: bookingState.customerMobile,
-    customerEmail: bookingState.customerEmail,
+    customerEmail: bookingState.customerEmail || (currentUser ? currentUser.email : ""),
     customerAddress: bookingState.customerAddress,
     specialInstructions: bookingState.specialInstructions,
-    teamPreference: bookingState.teamPreference, // Male or Female ONLY
+    teamPreference: bookingState.teamPreference || "Female", // Male or Female ONLY
     selectedServices: pricing.selectedServices.map(s => ({ id: s.id, name: s.name, price: s.price })),
-    roomSelectionType: bookingState.roomType,
-    roomCount: bookingState.roomCount,
-    selectedRooms: [bookingState.roomType],
+    roomSelectionType: bookingState.roomType || "All Rooms",
+    roomCount: bookingState.roomCount || 1,
+    selectedRooms: [bookingState.roomType || "All Rooms"],
     bookingDate: bookingState.bookingDate,
     bookingTime: bookingState.bookingTime,
     totalAmount: pricing.totalAmount,
-    status: "Confirmed",
+    paymentMethod: "Pay on Completion (Cash / UPI / Card)",
+    paymentStatus: "Pending on Arrival",
+    status: "Pending", // Strict Requirement: Initial status must be Pending!
     createdAt: new Date().toISOString()
   };
+
+  // Attempt backend persistence to Spring Boot & MySQL
+  try {
+    const backendPayload = {
+      cleaningTeamPreference: (newBooking.teamPreference || "FEMALE").toUpperCase(),
+      selectedServices: newBooking.selectedServices.map(s => s.name).join(", "),
+      roomCount: newBooking.roomCount,
+      bookingDate: newBooking.bookingDate,
+      bookingTime: newBooking.bookingTime,
+      customerName: newBooking.customerName,
+      mobileNumber: newBooking.customerMobile,
+      email: newBooking.customerEmail,
+      fullAddress: newBooking.customerAddress,
+      specialInstructions: newBooking.specialInstructions || "Standard cleaning"
+    };
+
+    const token = currentUser && currentUser.token ? currentUser.token : null;
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const res = await fetch("http://localhost:8080/api/bookings", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(backendPayload)
+    });
+
+    if (res.ok) {
+      const respData = await res.json();
+      if (respData && respData.data) {
+        newBooking.backendId = respData.data.id;
+        newBooking.id = respData.data.bookingId || newBooking.id;
+        newBooking.status = "Pending";
+      }
+    }
+  } catch (err) {
+    console.warn("Backend booking API error, continuing with local persistence:", err);
+  }
 
   // Save to LocalStorage
   const bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
@@ -432,11 +657,11 @@ function executeBookingConfirmation() {
   sessionStorage.removeItem("shc_preselected_services");
   sessionStorage.removeItem("shc_calc_room_count");
 
-  // Close modal and redirect to confirmation.html
+  // Close modal and show proper success message
   closeReviewModal();
-  showToast("Booking Confirmed Successfully!", "success");
+  showToast("Thank You! Your Booking Has Been Confirmed (Status: Pending)", "success");
 
   setTimeout(() => {
-    window.location.href = `confirmation.html?id=${bookingId}`;
+    window.location.href = `confirmation.html?id=${newBooking.id}`;
   }, 1000);
 }

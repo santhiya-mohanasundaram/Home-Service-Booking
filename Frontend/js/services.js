@@ -11,12 +11,34 @@ document.addEventListener("DOMContentLoaded", () => {
   setupSelectionActions();
 });
 
-// Render the 7 services WITHOUT ANY PRICES
-function renderServicesCatalog() {
+// Render the 7 services WITHOUT ANY PRICES (Connected to Backend /api/services)
+async function renderServicesCatalog() {
   const container = document.getElementById("servicesListGrid");
   if (!container) return;
 
-  const services = getAppServices();
+  let services = getAppServices();
+  try {
+    const res = await fetch("http://localhost:8080/api/services");
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.data && data.data.length > 0) {
+        services = data.data.map(s => {
+          const existing = (typeof DEFAULT_SERVICES !== "undefined" ? DEFAULT_SERVICES : []).find(d => d.name.toLowerCase() === s.name.toLowerCase()) || {};
+          return {
+            id: s.id,
+            name: s.name,
+            description: s.description || existing.description || "",
+            image: s.imageUrl || existing.image || "images/services/full-home.jpg",
+            price: Math.round(s.basePrice || existing.price || 999),
+            features: existing.features || ["Quality Sanitization", "Eco-friendly Cleaners", "Expert Equipment", "100% Satisfaction"]
+          };
+        });
+        localStorage.setItem("shc_services", JSON.stringify(services));
+      }
+    }
+  } catch (e) {
+    // Offline local fallback
+  }
 
   container.innerHTML = services.map(service => `
     <div class="service-card" id="service-card-${service.id}" data-id="${service.id}" onclick="toggleServiceSelection(${service.id})">
@@ -86,7 +108,7 @@ function updateSelectionBar() {
   if (count > 0) {
     bar.style.display = "block";
     if (countBadge) countBadge.textContent = `${count} Service${count > 1 ? "s" : ""} Selected`;
-    
+
     const services = getAppServices();
     const names = services
       .filter(s => selectedServiceIds.has(s.id))

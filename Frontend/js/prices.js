@@ -12,12 +12,34 @@ document.addEventListener("DOMContentLoaded", () => {
   initPriceCalculator();
 });
 
-// Render Pricing cards with editable price values from LocalStorage
-function renderPricingCards() {
+// Render Pricing cards with live price values from Spring Boot / LocalStorage
+async function renderPricingCards() {
   const container = document.getElementById("pricingCardsGrid");
   if (!container) return;
 
-  const services = getAppServices();
+  let services = getAppServices();
+  try {
+    const res = await fetch("http://localhost:8080/api/services");
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.data && data.data.length > 0) {
+        services = data.data.map(s => {
+          const existing = (typeof DEFAULT_SERVICES !== "undefined" ? DEFAULT_SERVICES : []).find(d => d.name.toLowerCase() === s.name.toLowerCase()) || {};
+          return {
+            id: s.id,
+            name: s.name,
+            description: s.description || existing.description || "",
+            image: s.imageUrl || existing.image || "images/services/full-home.jpg",
+            price: Math.round(s.basePrice || existing.price || 999),
+            features: existing.features || ["Quality Sanitization", "Eco-friendly Cleaners", "Expert Equipment", "100% Satisfaction"]
+          };
+        });
+        localStorage.setItem("shc_services", JSON.stringify(services));
+      }
+    }
+  } catch (e) {
+    // offline fallback
+  }
 
   container.innerHTML = services.map(service => `
     <div class="pricing-card ${service.id === 7 ? "featured" : ""}">

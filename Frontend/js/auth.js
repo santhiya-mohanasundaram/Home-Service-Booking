@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Toggle Password Visibility buttons
   setupPasswordToggles();
 
-  // Fill demo credentials helper
+  // Fill demo credentials helpers
   const fillDemoBtn = document.getElementById("fillDemoUserBtn");
   if (fillDemoBtn) {
     fillDemoBtn.addEventListener("click", () => {
@@ -34,7 +34,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (emailInput && passInput) {
         emailInput.value = "user@example.com";
         passInput.value = "User@123";
-        showToast("Demo user credentials filled!", "info");
+        showToast("Demo user 1 (Rahul) credentials filled!", "info");
+      }
+    });
+  }
+
+  const fillDemo2Btn = document.getElementById("fillDemoUser2Btn");
+  if (fillDemo2Btn) {
+    fillDemo2Btn.addEventListener("click", () => {
+      const emailInput = document.getElementById("loginEmail");
+      const passInput = document.getElementById("loginPassword");
+      if (emailInput && passInput) {
+        emailInput.value = "priya@example.com";
+        passInput.value = "Priya@123";
+        showToast("Demo user 2 (Priya) credentials filled!", "info");
       }
     });
   }
@@ -60,8 +73,8 @@ function setupPasswordToggles() {
   });
 }
 
-// User Login Function
-function handleUserLogin(e) {
+// User Login Function (Connected to Spring Boot API)
+async function handleUserLogin(e) {
   e.preventDefault();
 
   const emailInput = document.getElementById("loginEmail");
@@ -76,44 +89,82 @@ function handleUserLogin(e) {
     return;
   }
 
-  // Validate users in storage
-  const users = JSON.parse(localStorage.getItem("shc_users")) || [];
-  const matchedUser = users.find(u => u.email.toLowerCase() === email && u.password === password);
+  try {
+    const res = await fetch("http://localhost:8080/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password })
+    });
 
-  if (!matchedUser) {
-    showToast("Invalid email or password. Please try again.", "error");
-    return;
+    const resData = await res.json();
+    if (res.ok && resData && resData.data && resData.data.token) {
+      const authUser = resData.data;
+      const sessionUser = {
+        id: authUser.id,
+        fullName: authUser.name || authUser.fullName || email.split("@")[0],
+        email: authUser.email,
+        mobile: authUser.phone || authUser.mobile || "9876543210",
+        role: authUser.role || "ROLE_USER",
+        token: authUser.token
+      };
+
+      if (rememberMe) {
+        localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
+      } else {
+        sessionStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
+        localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
+      }
+
+      showToast(`Welcome back, ${sessionUser.fullName}!`, "success");
+
+      const redirectTarget = sessionStorage.getItem("shc_redirect_after_login") || "booking.html";
+      sessionStorage.removeItem("shc_redirect_after_login");
+
+      setTimeout(() => {
+        window.location.href = redirectTarget;
+      }, 800);
+      return;
+    } else {
+      const errorMsg = (resData && (resData.message || resData.error)) || "Invalid email or password.";
+      showToast(errorMsg, "error");
+      return;
+    }
+  } catch (err) {
+    console.warn("Backend offline or connection error, using local fallback:", err);
+    // Offline local fallback
+    const users = JSON.parse(localStorage.getItem("shc_users")) || [];
+    const matchedUser = users.find(u => u.email.toLowerCase() === email && u.password === password);
+
+    if (!matchedUser) {
+      showToast("Invalid email or password. Please try again.", "error");
+      return;
+    }
+
+    const sessionUser = {
+      id: matchedUser.id,
+      fullName: matchedUser.fullName,
+      email: matchedUser.email,
+      mobile: matchedUser.mobile,
+      role: matchedUser.role || "ROLE_USER",
+      token: "jwt_mock_token_" + Date.now()
+    };
+
+    if (rememberMe) {
+      localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
+    } else {
+      sessionStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
+      localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
+    }
+
+    showToast(`Welcome back, ${matchedUser.fullName}!`, "success");
+    const redirectTarget = sessionStorage.getItem("shc_redirect_after_login") || "booking.html";
+    sessionStorage.removeItem("shc_redirect_after_login");
+    setTimeout(() => { window.location.href = redirectTarget; }, 800);
   }
-
-  // Set user session
-  const sessionUser = {
-    id: matchedUser.id,
-    fullName: matchedUser.fullName,
-    email: matchedUser.email,
-    mobile: matchedUser.mobile,
-    role: matchedUser.role || "ROLE_USER"
-  };
-
-  if (rememberMe) {
-    localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
-  } else {
-    sessionStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
-    localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
-  }
-
-  showToast(`Welcome back, ${matchedUser.fullName}!`, "success");
-
-  // Check if there is a pending redirect (e.g. from clicking Book Now)
-  const redirectTarget = sessionStorage.getItem("shc_redirect_after_login") || "booking.html";
-  sessionStorage.removeItem("shc_redirect_after_login");
-
-  setTimeout(() => {
-    window.location.href = redirectTarget;
-  }, 1000);
 }
 
-// User Registration Function
-function handleUserRegistration(e) {
+// User Registration Function (Connected to Spring Boot API)
+async function handleUserRegistration(e) {
   e.preventDefault();
 
   const fullNameInput = document.getElementById("regFullName");
@@ -156,45 +207,91 @@ function handleUserRegistration(e) {
     return;
   }
 
-  const users = JSON.parse(localStorage.getItem("shc_users")) || [];
-  const exists = users.some(u => u.email.toLowerCase() === email);
-  if (exists) {
-    showToast("An account with this email already exists. Please log in.", "warning");
-    return;
+  try {
+    const registerPayload = {
+      name: fullName,
+      email: email,
+      password: password,
+      phone: mobile,
+      address: "Home Service Customer Address"
+    };
+
+    const res = await fetch("http://localhost:8080/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(registerPayload)
+    });
+
+    const resData = await res.json();
+    if (res.ok && resData && resData.data && resData.data.token) {
+      const authUser = resData.data;
+      const sessionUser = {
+        id: authUser.id,
+        fullName: authUser.name || fullName,
+        email: authUser.email || email,
+        mobile: mobile,
+        role: authUser.role || "ROLE_USER",
+        token: authUser.token
+      };
+
+      // Save user to storage
+      const users = JSON.parse(localStorage.getItem("shc_users")) || [];
+      users.push({
+        id: authUser.id,
+        fullName: fullName,
+        email: email,
+        mobile: mobile,
+        password: password,
+        role: "ROLE_USER",
+        token: authUser.token,
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem("shc_users", JSON.stringify(users));
+      localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
+
+      showToast("Account created successfully in MySQL! Redirecting...", "success");
+
+      const redirectTarget = sessionStorage.getItem("shc_redirect_after_login") || "booking.html";
+      sessionStorage.removeItem("shc_redirect_after_login");
+
+      setTimeout(() => {
+        window.location.href = redirectTarget;
+      }, 1000);
+      return;
+    } else {
+      const errorMsg = (resData && (resData.message || resData.error)) || "Registration failed. Email might already exist.";
+      showToast(errorMsg, "error");
+      return;
+    }
+  } catch (err) {
+    console.warn("Backend offline during registration, saving locally:", err);
+    const users = JSON.parse(localStorage.getItem("shc_users")) || [];
+    const exists = users.some(u => u.email.toLowerCase() === email);
+    if (exists) {
+      showToast("An account with this email already exists.", "warning");
+      return;
+    }
+
+    const newUser = {
+      id: Date.now(),
+      fullName: fullName,
+      email: email,
+      mobile: mobile,
+      password: password,
+      role: "ROLE_USER",
+      token: "jwt_mock_token_" + Date.now(),
+      createdAt: new Date().toISOString()
+    };
+
+    users.push(newUser);
+    localStorage.setItem("shc_users", JSON.stringify(users));
+    localStorage.setItem("shc_current_user", JSON.stringify(newUser));
+
+    showToast("Registration successful! Redirecting...", "success");
+    const redirectTarget = sessionStorage.getItem("shc_redirect_after_login") || "booking.html";
+    sessionStorage.removeItem("shc_redirect_after_login");
+    setTimeout(() => { window.location.href = redirectTarget; }, 1000);
   }
-
-  // Create new user (Role: ROLE_USER ONLY. Never assign admin!)
-  const newUser = {
-    id: Date.now(),
-    fullName: fullName,
-    email: email,
-    mobile: mobile,
-    password: password,
-    role: "ROLE_USER",
-    createdAt: new Date().toISOString()
-  };
-
-  users.push(newUser);
-  localStorage.setItem("shc_users", JSON.stringify(users));
-
-  // Automatically sign in the newly registered user
-  const sessionUser = {
-    id: newUser.id,
-    fullName: newUser.fullName,
-    email: newUser.email,
-    mobile: newUser.mobile,
-    role: "ROLE_USER"
-  };
-  localStorage.setItem("shc_current_user", JSON.stringify(sessionUser));
-
-  showToast("Registration successful! Redirecting to Booking...", "success");
-
-  const redirectTarget = sessionStorage.getItem("shc_redirect_after_login") || "booking.html";
-  sessionStorage.removeItem("shc_redirect_after_login");
-
-  setTimeout(() => {
-    window.location.href = redirectTarget;
-  }, 1200);
 }
 
 // Session validation and safe cleanup helpers

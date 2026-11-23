@@ -87,6 +87,15 @@ const DEFAULT_USERS = [
     password: "User@123",
     role: "ROLE_USER",
     createdAt: "2026-11-01T10:00:00Z"
+  },
+  {
+    id: 102,
+    fullName: "Priya Sundaram",
+    email: "priya@example.com",
+    mobile: "9876543211",
+    password: "Priya@123",
+    role: "ROLE_USER",
+    createdAt: "2026-11-02T10:00:00Z"
   }
 ];
 
@@ -200,6 +209,16 @@ function initAppStorage() {
 
   if (!localStorage.getItem("shc_users")) {
     localStorage.setItem("shc_users", JSON.stringify(DEFAULT_USERS));
+  } else {
+    try {
+      const existing = JSON.parse(localStorage.getItem("shc_users")) || [];
+      DEFAULT_USERS.forEach(defU => {
+        if (!existing.some(u => u.email.toLowerCase() === defU.email.toLowerCase())) {
+          existing.push(defU);
+        }
+      });
+      localStorage.setItem("shc_users", JSON.stringify(existing));
+    } catch (e) {}
   }
   if (!localStorage.getItem("shc_admin_credential")) {
     localStorage.setItem("shc_admin_credential", JSON.stringify(DEFAULT_ADMIN));
@@ -351,15 +370,18 @@ function showToast(message, type = "success") {
 
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
+  toast.style.background = "#ffffff";
+  toast.style.color = "#0f172a";
   
   let iconClass = "fa-check-circle";
-  if (type === "error") iconClass = "fa-exclamation-triangle";
-  if (type === "warning") iconClass = "fa-exclamation-circle";
-  if (type === "info") iconClass = "fa-info-circle";
+  let iconColor = "#10b981";
+  if (type === "error") { iconClass = "fa-exclamation-triangle"; iconColor = "#ef4444"; }
+  if (type === "warning") { iconClass = "fa-exclamation-circle"; iconColor = "#f59e0b"; }
+  if (type === "info") { iconClass = "fa-info-circle"; iconColor = "#0284c7"; }
 
   toast.innerHTML = `
-    <i class="fas ${iconClass}" style="font-size: 1.25rem;"></i>
-    <div style="flex:1; font-weight: 600; font-size: 0.92rem;">${message}</div>
+    <i class="fas ${iconClass}" style="font-size: 1.25rem; color: ${iconColor};"></i>
+    <div style="flex:1; font-weight: 600; font-size: 0.92rem; color: #0f172a !important;">${message}</div>
   `;
 
   container.appendChild(toast);
