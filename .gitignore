@@ -25,3 +25,5 @@ Thumbs.db
 .backup/
 backup/
 Home-Service-Booking/
+__pycache__/
+*.pyc

@@ -81,7 +81,7 @@ public class SecurityConfig {
                         // Swagger & OpenAPI Documentation Endpoints
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
 
-                        // Public Endpoints
+                        // Public Endpoints (Strictly Registration, Login, Catalog viewing, and Estimations)
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/prices/**").permitAll()
@@ -92,16 +92,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/bookings/coupon/validate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/bookings/calculate-price").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/bookings").permitAll()
                         .requestMatchers("/error").permitAll()
 
                         // Strict Admin-Only APIs (Protected on Backend)
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
 
-                        // Authenticated User / Any Authenticated Role
+                        // Authenticated User / Any Authenticated Role (Profile, Bookings, Payments)
                         .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/bookings/**").authenticated()
                         .requestMatchers("/api/payments/**").authenticated()
