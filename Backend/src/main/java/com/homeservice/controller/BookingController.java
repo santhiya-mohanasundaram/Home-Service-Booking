@@ -114,4 +114,16 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success("Booking cancelled successfully", cancelled));
     }
 
+    /**
+     * Calculates dynamic booking price for given services and room count.
+     */
+    @PostMapping("/calculate-price")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> calculateBookingPrice(@RequestBody Map<String, Object> payload) {
+        @SuppressWarnings("unchecked")
+        List<String> services = (List<String>) payload.getOrDefault("services", List.of());
+        int rooms = Integer.parseInt(payload.getOrDefault("rooms", 1).toString());
+        double price = bookingService.calculateBookingPrice(services, rooms);
+        return ResponseEntity.ok(ApiResponse.success("Price calculated successfully", Map.of("rooms", rooms, "services", services, "totalPrice", price)));
+    }
+
 }
