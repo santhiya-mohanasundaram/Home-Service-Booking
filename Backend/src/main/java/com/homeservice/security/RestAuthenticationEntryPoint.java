@@ -22,7 +22,11 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        ApiResponse<Void> body = ApiResponse.error("Full authentication is required to access this resource. Please provide a valid Bearer token in the Authorization header. (" + authException.getMessage() + ")");
+        String message = authException.getMessage();
+        if (message == null || message.trim().isEmpty() || message.equalsIgnoreCase("Bad credentials")) {
+            message = "Full authentication is required to access this resource. Please provide a valid Bearer token in the Authorization header.";
+        }
+        ApiResponse<Void> body = ApiResponse.error(message);
         objectMapper.writeValue(response.getOutputStream(), body);
     }
 }

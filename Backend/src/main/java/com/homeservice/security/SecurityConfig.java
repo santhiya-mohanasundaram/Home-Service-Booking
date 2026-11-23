@@ -78,11 +78,16 @@ public class SecurityConfig {
                         // CORS Preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        // Root & API Discovery Health Endpoints
+                        .requestMatchers("/", "/api", "/api/status", "/error").permitAll()
+
                         // Swagger & OpenAPI Documentation Endpoints
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
 
-                        // Public Endpoints (Strictly Registration, Login, Catalog viewing, and Estimations)
+                        // Public Auth Endpoints (Registration, Login, Auth Status)
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // Public Catalog & Pricing Exploration Endpoints
                         .requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/prices/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/destinations/**").permitAll()
@@ -92,15 +97,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/bookings/coupon/validate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/bookings/calculate-price").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
-                        .requestMatchers("/error").permitAll()
+
+                        // Authenticated User Profile & Password Change Endpoints (Must be evaluated before /api/users/{id})
+                        .requestMatchers("/api/users/profile", "/api/users/change-password").authenticated()
 
                         // Strict Admin-Only APIs (Protected on Backend)
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id:[0-9]+}").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/bookings").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/destinations/**", "/api/hotels/**", "/api/flights/**", "/api/packages/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
 
-                        // Authenticated User / Any Authenticated Role (Profile, Bookings, Payments)
+                        // Authenticated User APIs (User Profile, Booking Creation, Booking History, Payments)
                         .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/bookings/**").authenticated()
                         .requestMatchers("/api/payments/**").authenticated()

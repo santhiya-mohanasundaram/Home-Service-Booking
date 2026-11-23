@@ -57,7 +57,7 @@ public class UserController {
      * @param id user ID
      * @return UserProfileResponse
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9]+}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<UserProfileResponse>> getUserById(@PathVariable Long id) {
         UserProfileResponse user = userService.getUserById(id);
@@ -71,7 +71,7 @@ public class UserController {
      * @param request updated profile values
      * @return updated UserProfileResponse
      */
-    @PutMapping("/{id}")
+    @PutMapping("/{id:[0-9]+}")
     public ResponseEntity<ApiResponse<UserProfileResponse>> updateUserProfile(@PathVariable Long id,
                                                                              @Valid @RequestBody UpdateProfileRequest request) {
         UserProfileResponse updated = userService.updateUserProfile(id, request);

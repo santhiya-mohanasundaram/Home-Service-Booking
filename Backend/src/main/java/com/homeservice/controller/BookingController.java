@@ -42,12 +42,7 @@ public class BookingController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<BookingResponse>> createBooking(@Valid @RequestBody BookingRequest request) {
-        User currentUser = null;
-        try {
-            currentUser = userService.getCurrentAuthenticatedUser();
-        } catch (Exception ignored) {
-            // Guest or public checkout mode allowed
-        }
+        User currentUser = userService.getCurrentAuthenticatedUser();
         BookingResponse response = bookingService.createBooking(request, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Booking created successfully with status PENDING", response));
