@@ -340,13 +340,13 @@
       if (confirmedWrapper) confirmedWrapper.style.display = "block";
 
       // Populate confirmation details
-      document.getElementById("confBookingId").textContent = activeBooking.id;
+      document.getElementById("confBookingId").textContent = activeBooking.bookingId || activeBooking.id;
       document.getElementById("confCustomerName").textContent = activeBooking.customerName;
       document.getElementById("confCustomerContact").innerHTML = `
-        <i class="fas fa-phone-alt" style="font-size:0.8rem;"></i> ${activeBooking.customerMobile}
+        <i class="fas fa-phone-alt" style="font-size:0.8rem;"></i> ${activeBooking.customerMobile || activeBooking.mobileNumber || "N/A"}
       `;
       document.getElementById("confCustomerAddress").innerHTML = `
-        <i class="fas fa-map-marker-alt" style="font-size:0.8rem; color:var(--primary);"></i> ${activeBooking.customerAddress}
+        <i class="fas fa-map-marker-alt" style="font-size:0.8rem; color:var(--primary);"></i> ${activeBooking.customerAddress || activeBooking.fullAddress || "N/A"}
       `;
       document.getElementById("confBookingDate").textContent = activeBooking.bookingDate;
       document.getElementById("confBookingTime").textContent = activeBooking.bookingTime;

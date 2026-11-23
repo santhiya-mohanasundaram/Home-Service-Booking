@@ -188,7 +188,7 @@ async function loadUserBookingsList(forceToast = false) {
               customerEmail: b.email,
               customerAddress: b.fullAddress,
               teamPreference: b.cleaningTeamPreference,
-              selectedServices: b.servicesSummary ? b.servicesSummary.split(", ").map((s, idx) => ({ id: idx + 1, name: s, price: 999 })) : [],
+              selectedServices: (b.selectedServices || b.servicesSummary) ? (b.selectedServices || b.servicesSummary).split(", ").map((s, idx) => ({ id: idx + 1, name: s })) : [],
               roomCount: b.roomCount,
               bookingDate: b.bookingDate,
               bookingTime: b.bookingTime,
