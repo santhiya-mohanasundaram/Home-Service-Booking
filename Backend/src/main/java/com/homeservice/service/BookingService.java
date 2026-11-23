@@ -250,6 +250,34 @@ public class BookingService {
     }
 
     /**
+     * Calculates price for given services and room count.
+     *
+     * @param services list of service names
+     * @param roomCount number of rooms
+     * @return calculated total price in INR
+     */
+    @Transactional(readOnly = true)
+    public double calculateBookingPrice(List<String> services, int roomCount) {
+        String servicesStr = services != null ? String.join(", ", services) : "";
+        return priceService.calculateBookingTotal(servicesStr, roomCount);
+    }
+
+    /**
+     * Calculates price for given comma-separated services and room count.
+     *
+     * @param servicesStr comma-separated services
+     * @param roomCount number of rooms
+     * @return calculated total price in INR
+     */
+    @Transactional(readOnly = true)
+    public double calculateBookingPrice(String servicesStr, int roomCount) {
+        return priceService.calculateBookingTotal(servicesStr, roomCount);
+    }
+
+
+    public String generateBookingId() {
+        return "SH-BOOKING-REF";
+    }
 
     public BookingResponse mapToResponse(Booking b) {
         BookingResponse r = new BookingResponse();
