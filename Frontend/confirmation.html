@@ -71,6 +71,10 @@
             <div style="width: 76px; height: 76px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1.25rem; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2);">
               <i class="fas fa-check"></i>
             </div>
+            <!-- Official Booking Verification Status Pill -->
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #dcfce7; color: #15803d; padding: 0.35rem 0.9rem; border-radius: 9999px; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.75rem;">
+              <i class="fas fa-shield-alt"></i> Verified SparkleHome Booking &bull; Instant Confirmation
+            </div>
             <span class="badge badge-success" style="font-size: 0.9rem; padding: 0.4rem 1.2rem; margin-bottom: 0.6rem;">
               <i class="fas fa-check-circle"></i> Booking Status: Confirmed
             </span>
@@ -176,8 +180,8 @@
 
           <!-- STEP 5: Download Booking Button (Displayed ONLY after successful confirmation) -->
           <div class="no-print" style="display:flex; justify-content:center; gap:1.25rem; flex-wrap:wrap; margin-top:2rem;">
-            <!-- REQUIRED BUTTON: Download Booking -->
-            <button type="button" class="btn btn-primary btn-lg" id="btnDownloadBooking" onclick="downloadBookingPDF()">
+            <!-- REQUIRED BUTTON: Download Booking with Confirmation Popup -->
+            <button type="button" class="btn btn-primary btn-lg" id="btnDownloadBooking" onclick="openDownloadConfirmModal()">
               <i class="fas fa-file-pdf"></i> Download Booking
             </button>
 
@@ -188,6 +192,38 @@
             <a href="index.html" class="btn btn-outline btn-lg">
               <i class="fas fa-home"></i> Return to Home
             </a>
+          </div>
+
+          <!-- Download Confirmation Modal Popup -->
+          <div class="modal-overlay" id="downloadConfirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-box" style="max-width: 480px; text-align: center; padding: 2.25rem 2rem; border-radius: var(--radius-xl); box-shadow: 0 20px 40px rgba(0,0,0,0.25);">
+              
+              <div style="width: 68px; height: 68px; background: rgba(13, 148, 136, 0.12); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.25rem;">
+                <i class="fas fa-file-pdf"></i>
+              </div>
+
+              <h3 id="modalTitle" style="font-size: 1.35rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.6rem;">
+                Download Booking Receipt
+              </h3>
+
+              <p style="font-size: 1.05rem; color: var(--text-main); font-weight: 600; margin-bottom: 0.5rem;">
+                Are you sure you want to download this file?
+              </p>
+
+              <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.5;" id="modalDownloadRefText">
+                Your official receipt for booking <strong id="modalBookingIdRef" style="color: var(--secondary); font-family: monospace;">SHC-2026-XXXXX</strong> will be downloaded as a high-quality PDF.
+              </p>
+
+              <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
+                <button type="button" class="btn btn-outline" id="btnCancelDownload" onclick="closeDownloadConfirmModal()" style="min-width: 120px; font-weight: 600;">
+                  Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="btnConfirmDownload" onclick="executeConfirmedDownload()" style="min-width: 180px; font-weight: 700;">
+                  <i class="fas fa-download"></i> Yes, Download
+                </button>
+              </div>
+
+            </div>
           </div>
 
         </div>
@@ -330,7 +366,53 @@
       }
     }
 
-    // Step 5: Download Booking PDF Generation
+    // Step 5: Confirmation Modal Controls
+    function openDownloadConfirmModal() {
+      if (!activeBooking) {
+        showToast("No active booking to download.", "error");
+        return;
+      }
+      const refEl = document.getElementById("modalBookingIdRef");
+      if (refEl) {
+        refEl.textContent = activeBooking.id || "SHC-2026-REF";
+      }
+      const modal = document.getElementById("downloadConfirmModal");
+      if (modal) {
+        modal.classList.add("active");
+      }
+    }
+
+    function closeDownloadConfirmModal() {
+      const modal = document.getElementById("downloadConfirmModal");
+      if (modal) {
+        modal.classList.remove("active");
+      }
+    }
+
+    function executeConfirmedDownload() {
+      closeDownloadConfirmModal();
+      downloadBookingPDF();
+    }
+
+    // Close modal on Escape key or backdrop click
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeDownloadConfirmModal();
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const modal = document.getElementById("downloadConfirmModal");
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            closeDownloadConfirmModal();
+          }
+        });
+      }
+    });
+
+    // Step 6: Isolated Off-Screen PDF Generation (Full-width, zero cutoff)
     function downloadBookingPDF() {
       if (!activeBooking) {
         showToast("No active booking to download.", "error");
@@ -338,7 +420,10 @@
       }
 
       const element = document.getElementById("printableConfirmationCard");
-      showToast("Generating official booking confirmation PDF...", "info");
+      if (!element) {
+        showToast("Booking receipt content not found.", "error");
+        return;
+      }
 
       const btn = document.getElementById("btnDownloadBooking");
       if (btn) {
@@ -346,30 +431,63 @@
         btn.disabled = true;
       }
 
+      // Create a clean off-screen clone positioned at top-left (0,0) to prevent any top margin offset in PDF
+      const clone = element.cloneNode(true);
+      clone.style.margin = '0';
+      clone.style.padding = '24px';
+      clone.style.boxShadow = 'none';
+      clone.style.border = '1px solid #cbd5e1';
+      clone.style.borderRadius = '8px';
+      clone.style.background = '#ffffff';
+      clone.style.width = '760px';
+      clone.style.position = 'fixed';
+      clone.style.top = '0';
+      clone.style.left = '0';
+      clone.style.zIndex = '-99999';
+      document.body.appendChild(clone);
+
+      const fileName = `SparkleHome_Receipt_${(activeBooking.id || "Booking").replace(/\s+/g, "_")}.pdf`;
+
       const opt = {
-        margin:       10,
-        filename:     `SparkleHome_Booking_${activeBooking.id}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        margin: [8, 8, 8, 8],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          scrollY: 0,
+          scrollX: 0,
+          windowWidth: 800,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       if (window.html2pdf) {
-        html2pdf().set(opt).from(element).save().then(() => {
-          showToast("Booking PDF downloaded successfully!", "success");
+        html2pdf().set(opt).from(clone).save().then(() => {
+          clone.remove();
+          showToast("Your receipt has been downloaded successfully.", "success");
           if (btn) {
             btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
             btn.disabled = false;
           }
         }).catch(err => {
-          console.error(err);
+          clone.remove();
+          console.error("html2pdf error:", err);
           if (btn) {
             btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
             btn.disabled = false;
           }
+          // Fallback to print
           window.print();
         });
       } else {
+        clone.remove();
         if (btn) {
           btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
           btn.disabled = false;
