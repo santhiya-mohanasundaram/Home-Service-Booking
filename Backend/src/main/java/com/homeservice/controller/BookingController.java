@@ -93,4 +93,25 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success("Booking retrieved successfully", booking));
     }
 
+    /**
+     * Updates an existing booking.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<BookingResponse>> updateBooking(@PathVariable Long id,
+                                                                      @Valid @RequestBody BookingRequest request) {
+        User currentUser = userService.getCurrentAuthenticatedUser();
+        BookingResponse updated = bookingService.updateBooking(id, request, currentUser);
+        return ResponseEntity.ok(ApiResponse.success("Booking updated successfully", updated));
+    }
+
+    /**
+     * Cancels an eligible booking.
+     */
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse<BookingResponse>> cancelBooking(@PathVariable Long id) {
+        User currentUser = userService.getCurrentAuthenticatedUser();
+        BookingResponse cancelled = bookingService.cancelBooking(id, currentUser);
+        return ResponseEntity.ok(ApiResponse.success("Booking cancelled successfully", cancelled));
+    }
+
 }
