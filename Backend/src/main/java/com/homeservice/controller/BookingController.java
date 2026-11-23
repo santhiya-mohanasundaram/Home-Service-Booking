@@ -54,4 +54,43 @@ public class BookingController {
     }
 
     /**
+     * Retrieves personal bookings of the logged-in customer.
+     *
+     * @return list of bookings
+     */
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getUserBookings() {
+        User currentUser = userService.getCurrentAuthenticatedUser();
+        List<BookingResponse> bookings = bookingService.getUserBookings(currentUser);
+        return ResponseEntity.ok(ApiResponse.success("User bookings retrieved successfully", bookings));
+    }
+
+    /**
+     * Alias for getUserBookings representing booking history.
+     */
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getBookingHistory() {
+        return getUserBookings();
+    }
+
+    /**
+     * Retrieves all bookings in the system (Admin only).
+     */
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookings() {
+        List<BookingResponse> bookings = bookingService.getAllBookings();
+        return ResponseEntity.ok(ApiResponse.success("All bookings retrieved successfully", bookings));
+    }
+
+    /**
+     * Retrieves a booking by ID.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BookingResponse>> getBookingById(@PathVariable Long id) {
+        User currentUser = userService.getCurrentAuthenticatedUser();
+        BookingResponse booking = bookingService.getBookingById(id, currentUser);
+        return ResponseEntity.ok(ApiResponse.success("Booking retrieved successfully", booking));
+    }
+
 }
