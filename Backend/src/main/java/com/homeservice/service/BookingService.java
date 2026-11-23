@@ -287,6 +287,53 @@ public class BookingService {
 
     /**
      * Validates a promotional discount coupon.
+     *
+     * @param couponCode coupon code string
+     * @param amount order total
+     * @return CouponValidationResponse with discount calculations
+     */
+    @Transactional(readOnly = true)
+    public CouponValidationResponse validateCoupon(String couponCode, Double amount) {
+        if (couponCode == null || couponCode.trim().isEmpty()) {
+            throw new InvalidRequestException("Coupon code cannot be empty.");
+        }
+        Coupon coupon = couponRepository.findByCodeIgnoreCaseAndActiveTrue(couponCode.trim())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid or inactive coupon code: " + couponCode));
+
+        if (amount != null && coupon.getMinAmount() != null && amount < coupon.getMinAmount()) {
+            return new CouponValidationResponse(false, coupon.getCode(), coupon.getDiscountPercent(), 0.0, amount,
+                    "Minimum order amount of Rs." + coupon.getMinAmount() + " required for this coupon.");
+        }
+
+        double discount = (amount != null ? amount : 1000.0) * (coupon.getDiscountPercent() / 100.0);
+        if (coupon.getMaxDiscount() != null && discount > coupon.getMaxDiscount()) {
+            discount = coupon.getMaxDiscount();
+        }
+        double finalPrice = (amount != null ? amount : 1000.0) - discount;
+
+        return new CouponValidationResponse(true, coupon.getCode(), coupon.getDiscountPercent(), discount, finalPrice,
+                "Coupon applied successfully! Saved Rs." + discount);
+    }
+
+    /**
+     * Applies a valid coupon to an existing booking.
+     *
+     * @param bookingRef booking reference ID
+     * @param couponCode coupon code
+     * @return updated BookingResponse
+     */
+    public BookingResponse applyCoupon(String bookingRef, String couponCode) {
+        Booking booking = bookingRepository.findByBookingId(bookingRef)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + bookingRef));
+
+        CouponValidationResponse val = validateCoupon(couponCode, booking.getTotalAmount());
+        if (!val.isValid()) {
+            throw new InvalidRequestException(val.getMessage());
+        }
+
+        booking.setTotalAmount(val.getFinalAmount());
+        return mapToResponse(bookingRepository.save(booking));
+    }
 
     public BookingResponse mapToResponse(Booking b) {
         BookingResponse r = new BookingResponse();
