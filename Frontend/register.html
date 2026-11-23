@@ -69,7 +69,7 @@
           </label>
           <div style="position: relative;">
             <i class="fas fa-user" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-            <input type="text" id="regFullName" class="form-control" placeholder="e.g. Rahul Sharma" style="padding-left: 2.5rem;" required>
+            <input type="text" id="regFullName" class="form-control" placeholder="e.g. Rahul Sharma" autocomplete="name" style="padding-left: 2.5rem;" required>
           </div>
         </div>
 
@@ -81,7 +81,7 @@
             </label>
             <div style="position: relative;">
               <i class="fas fa-envelope" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-              <input type="email" id="regEmail" class="form-control" placeholder="name@example.com" style="padding-left: 2.5rem;" required>
+              <input type="email" id="regEmail" class="form-control" placeholder="name@example.com" autocomplete="email" style="padding-left: 2.5rem;" required>
             </div>
           </div>
 
@@ -91,7 +91,7 @@
             </label>
             <div style="position: relative;">
               <i class="fas fa-phone-alt" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-              <input type="tel" id="regMobile" class="form-control" placeholder="10-digit number" maxlength="10" style="padding-left: 2.5rem;" required>
+              <input type="tel" id="regMobile" class="form-control" placeholder="10-digit number" maxlength="10" autocomplete="tel" pattern="[0-9]{10}" inputmode="numeric" title="Please enter a valid 10-digit mobile number" style="padding-left: 2.5rem;" required>
             </div>
           </div>
         </div>
@@ -103,10 +103,15 @@
           </label>
           <div style="position: relative;">
             <i class="fas fa-lock" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-            <input type="password" id="regPassword" class="form-control" placeholder="Min. 6 characters" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
+            <input type="password" id="regPassword" class="form-control" placeholder="Min. 6 characters" autocomplete="new-password" minlength="6" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
             <button type="button" class="password-toggle-btn" data-target="regPassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" aria-label="Toggle password">
               <i class="fas fa-eye"></i>
             </button>
+          </div>
+          <!-- Password Requirement Helper -->
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+            <span><i class="fas fa-check-circle" style="color: #10b981;"></i> Min. 6 characters</span>
+            <span><i class="fas fa-shield-alt" style="color: var(--primary);"></i> Encrypted with BCrypt</span>
           </div>
         </div>
 
@@ -117,11 +122,22 @@
           </label>
           <div style="position: relative;">
             <i class="fas fa-shield-alt" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
-            <input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-type your password" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
+            <input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-type your password" autocomplete="new-password" minlength="6" style="padding-left: 2.5rem; padding-right: 2.5rem;" required>
             <button type="button" class="password-toggle-btn" data-target="regConfirmPassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" aria-label="Toggle password">
               <i class="fas fa-eye"></i>
             </button>
           </div>
+        </div>
+
+        <!-- Live Form Status & Feedback Alert Region -->
+        <div id="registerAlertRegion" role="status" aria-live="polite" style="display: none; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.88rem; margin-bottom: 1.25rem;"></div>
+
+        <!-- Terms and Conditions Checkbox -->
+        <div style="margin-bottom: 1.25rem; display: flex; align-items: flex-start; gap: 0.6rem;">
+          <input type="checkbox" id="regTerms" required style="margin-top: 3px; accent-color: var(--primary); cursor: pointer;">
+          <label for="regTerms" style="font-size: 0.84rem; color: var(--text-muted); cursor: pointer; line-height: 1.4;">
+            I agree to SparkleHome's <a href="#" style="color: var(--primary); font-weight: 600;">Terms of Service</a> and acknowledge the <a href="#" style="color: var(--primary); font-weight: 600;">Privacy Policy</a>.
+          </label>
         </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-bottom: 1.25rem;">
@@ -130,6 +146,12 @@
 
         <div style="text-align: center; font-size: 0.92rem; color: var(--text-muted);">
           Already have an account? <a href="login.html" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Log in here</a>
+        </div>
+
+        <!-- Security Trust Badges -->
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); display: flex; justify-content: center; gap: 1.5rem; color: var(--text-muted); font-size: 0.78rem;">
+          <span><i class="fas fa-lock" style="color: #10b981;"></i> 256-Bit SSL Encryption</span>
+          <span><i class="fas fa-database" style="color: var(--primary);"></i> Secure MySQL Backend</span>
         </div>
       </form>
 
