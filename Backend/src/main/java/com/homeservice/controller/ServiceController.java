@@ -30,11 +30,20 @@ public class ServiceController {
         return ResponseEntity.ok(ApiResponse.success("Service retrieved successfully", service));
     }
 
+    /**
+     * Updates service price by ID.
+     */
     @PutMapping("/{id}/price")
     public ResponseEntity<ApiResponse<CleaningService>> updateServicePrice(
             @PathVariable Long id,
             @RequestBody java.util.Map<String, Object> body) {
+        if (!body.containsKey("price")) {
+            throw new com.homeservice.exception.BadRequestException("Request body must contain 'price'");
+        }
         Double price = Double.valueOf(body.get("price").toString());
+        if (price <= 0) {
+            throw new com.homeservice.exception.BadRequestException("Price must be greater than zero");
+        }
         CleaningService updated = serviceService.updateServicePrice(id, price);
         return ResponseEntity.ok(ApiResponse.success("Service price updated successfully", updated));
     }
