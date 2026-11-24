@@ -120,6 +120,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 
+        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
