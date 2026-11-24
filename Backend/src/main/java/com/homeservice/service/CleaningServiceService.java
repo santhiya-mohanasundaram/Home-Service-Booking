@@ -2,7 +2,6 @@ package com.homeservice.service;
 
 import com.homeservice.dto.ServiceRequest;
 import com.homeservice.entity.CleaningService;
-import com.homeservice.entity.ServicePrice;
 import com.homeservice.exception.BadRequestException;
 import com.homeservice.exception.ResourceNotFoundException;
 import com.homeservice.repository.CleaningServiceRepository;
@@ -16,12 +15,12 @@ import java.util.List;
 public class CleaningServiceService {
 
     private final CleaningServiceRepository serviceRepository;
-    private final ServicePriceRepository servicePriceRepository;
+    private final ServicePriceRepository priceRepository;
 
     public CleaningServiceService(CleaningServiceRepository serviceRepository,
-                                  ServicePriceRepository servicePriceRepository) {
+                                  ServicePriceRepository priceRepository) {
         this.serviceRepository = serviceRepository;
-        this.servicePriceRepository = servicePriceRepository;
+        this.priceRepository = priceRepository;
     }
 
     @Transactional(readOnly = true)
@@ -54,64 +53,17 @@ public class CleaningServiceService {
                 request.getActive() != null ? request.getActive() : true,
                 request.getImageUrl()
         );
-        CleaningService saved = serviceRepository.save(service);
-
-        // Sync with prices repository
-        ServicePrice price = new ServicePrice(
-                saved.getId(),
-                saved.getName(),
-                saved.getBasePrice(),
-                saved.getPricePerUnit() != null ? saved.getPricePerUnit() : 200.0,
-                0.05,
-                "Price configuration for " + saved.getName()
-        );
-        servicePriceRepository.save(price);
-
-        return saved;
-    }
-
-    @Transactional
-    public CleaningService updateServicePrice(Long id, Double newPrice) {
-        CleaningService service = getServiceById(id);
-        service.setBasePrice(newPrice);
-        CleaningService saved = serviceRepository.save(service);
-
-        // Synchronize corresponding record in prices table
-        servicePriceRepository.findByServiceId(id).ifPresentOrElse(
-                sp -> {
-                    sp.setBasePrice(newPrice);
-                    servicePriceRepository.save(sp);
-                },
-                () -> {
-                    ServicePrice sp = new ServicePrice(
-                            id,
-                            service.getName(),
-                            newPrice,
-                            service.getPricePerUnit() != null ? service.getPricePerUnit() : 200.0,
-                            0.05,
-                            "Standard base package for " + service.getName()
-                    );
-                    servicePriceRepository.save(sp);
-                }
-        );
-
-        return saved;
+        return serviceRepository.save(service);
     }
 
     @Transactional
     public CleaningService updateService(Long id, ServiceRequest request) {
         CleaningService service = getServiceById(id);
-        if (request.getName() != null) service.setName(request.getName());
-        if (request.getDescription() != null) service.setDescription(request.getDescription());
-        if (request.getBasePrice() != null) {
-            service.setBasePrice(request.getBasePrice());
-            servicePriceRepository.findByServiceId(id).ifPresent(sp -> {
-                sp.setBasePrice(request.getBasePrice());
-                servicePriceRepository.save(sp);
-            });
-        }
-        if (request.getPricePerUnit() != null) service.setPricePerUnit(request.getPricePerUnit());
-        if (request.getDuration() != null) service.setDuration(request.getDuration());
+        service.setName(request.getName());
+        service.setDescription(request.getDescription());
+        service.setBasePrice(request.getBasePrice());
+        service.setPricePerUnit(request.getPricePerUnit());
+        service.setDuration(request.getDuration());
         if (request.getActive() != null) {
             service.setActive(request.getActive());
         }
@@ -127,5 +79,28 @@ public class CleaningServiceService {
         // Soft delete / deactivate service to maintain historical booking reference integrity
         service.setActive(false);
         serviceRepository.save(service);
+    }
+
+    @Transactional
+    public CleaningService updateServicePrice(Long id, Double newPrice) {
+        CleaningService service = getServiceById(id);
+        service.setBasePrice(newPrice);
+        service.setPricePerUnit(newPrice);
+        CleaningService saved = serviceRepository.save(service);
+
+        // Synchronize with ServicePrice table for ecosystem consistency
+        priceRepository.findByServiceId(id).ifPresentOrElse(sp -> {
+            sp.setBasePrice(newPrice);
+            sp.setPricePerRoom(newPrice);
+            priceRepository.save(sp);
+        }, () -> {
+            priceRepository.findByServiceNameIgnoreCase(service.getName()).ifPresent(sp -> {
+                sp.setBasePrice(newPrice);
+                sp.setPricePerRoom(newPrice);
+                priceRepository.save(sp);
+            });
+        });
+
+        return saved;
     }
 }

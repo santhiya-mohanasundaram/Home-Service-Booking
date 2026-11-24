@@ -89,6 +89,19 @@ public class BookingController {
     }
 
     /**
+     * Retrieves a booking by string reference (e.g. SH-20261124-ABCDEF) or numeric ID for receipts.
+     */
+    @GetMapping("/ref/{ref}")
+    public ResponseEntity<ApiResponse<BookingResponse>> getBookingByRef(@PathVariable String ref) {
+        User currentUser = null;
+        try {
+            currentUser = userService.getCurrentAuthenticatedUser();
+        } catch (Exception ignored) {}
+        BookingResponse booking = bookingService.getBookingByRef(ref, currentUser);
+        return ResponseEntity.ok(ApiResponse.success("Booking retrieved successfully", booking));
+    }
+
+    /**
      * Updates an existing booking.
      */
     @PutMapping("/{id}")

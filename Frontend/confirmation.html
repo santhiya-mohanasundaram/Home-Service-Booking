@@ -301,18 +301,65 @@
       loadConfirmedBooking();
     });
 
-    function loadConfirmedBooking() {
+    async function loadConfirmedBooking() {
       // 1. Try URL parameter
       const params = new URLSearchParams(window.location.search);
       const queryId = params.get("id");
 
-      const bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
-
+      // Attempt live fetch from backend if queryId is present
       if (queryId) {
-        activeBooking = bookings.find(b => b.id === queryId || b.bookingId === queryId || (b.backendId && String(b.backendId) === queryId));
+        try {
+          const res = await fetch(`http://localhost:8080/api/bookings/ref/${queryId}`);
+          if (res.ok) {
+            const resJson = await res.json();
+            if (resJson && resJson.data) {
+              const b = resJson.data;
+              const liveServices = getAppServices();
+              let parsedServices = [];
+              const rawServs = b.selectedServices || b.servicesSummary || "";
+              const names = Array.isArray(rawServs) ? rawServs : rawServs.split(",").map(x => x.trim()).filter(Boolean);
+              parsedServices = names.map((name, idx) => {
+                const found = liveServices.find(s => s.name.toLowerCase() === name.toLowerCase());
+                return {
+                  id: idx + 1,
+                  name: name,
+                  price: found ? found.price : Math.round(b.totalAmount / (names.length * Math.max(1, b.roomCount)))
+                };
+              });
+
+              activeBooking = {
+                id: b.bookingId || b.id,
+                bookingId: b.bookingId,
+                customerName: b.customerName,
+                customerMobile: b.mobileNumber,
+                customerEmail: b.email,
+                customerAddress: b.fullAddress,
+                specialInstructions: b.specialInstructions,
+                teamPreference: b.cleaningTeamPreference || "Female",
+                selectedServices: parsedServices,
+                roomCount: b.roomCount || 1,
+                roomSelectionType: "All Rooms",
+                bookingDate: b.bookingDate,
+                bookingTime: b.bookingTime,
+                totalAmount: b.totalAmount,
+                status: b.bookingStatus || "Confirmed"
+              };
+            }
+          }
+        } catch (e) {
+          console.warn("Backend lookup for booking failed:", e);
+        }
       }
 
-      // 2. Try session storage fallback
+      // 2. Fallback to localStorage if activeBooking not populated from backend
+      if (!activeBooking) {
+        const bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
+        if (queryId) {
+          activeBooking = bookings.find(b => b.id === queryId || b.bookingId === queryId);
+        }
+      }
+
+      // 3. Try session storage fallback
       if (!activeBooking) {
         const sessionBooking = sessionStorage.getItem("shc_latest_confirmed_booking");
         if (sessionBooking) {
@@ -322,110 +369,87 @@
         }
       }
 
-      // If still not found, check the most recent booking in local storage
-      if (!activeBooking && bookings.length > 0) {
-        activeBooking = bookings[0];
-      }
-
-      // 3. Fallback demo booking if storage is clean (ensures card is always populated and never blank)
+      // 4. If still not found, check the most recent booking in local storage
       if (!activeBooking) {
-        activeBooking = {
-          id: "SH-20261123-EDD767",
-          bookingId: "SH-20261123-EDD767",
-          customerName: "Rahul Sharma",
-          customerMobile: "9876543210",
-          customerEmail: "user@example.com",
-          customerAddress: "Flat 402, Green Meadows, Bengaluru",
-          bookingDate: "2026-11-26",
-          bookingTime: "09:00 AM – 11:00 AM",
-          teamPreference: "Female",
-          roomCount: 2,
-          roomSelectionType: "All Rooms",
-          totalAmount: 1999.0,
-          status: "Confirmed",
-          selectedServices: [
-            { name: "Kitchen Cleaning", price: 800 },
-            { name: "Deep Cleaning", price: 1199 }
-          ],
-          specialInstructions: "Standard sanitization & deep cleaning package"
-        };
+        const bookings = JSON.parse(localStorage.getItem("shc_bookings")) || [];
+        if (bookings.length > 0) {
+          activeBooking = bookings[0];
+        }
       }
 
       const noBookingEl = document.getElementById("noBookingState");
       const confirmedWrapper = document.getElementById("confirmedBookingWrapper");
 
+      if (!activeBooking) {
+        if (noBookingEl) noBookingEl.style.display = "block";
+        if (confirmedWrapper) confirmedWrapper.style.display = "none";
+        return;
+      }
+
       if (noBookingEl) noBookingEl.style.display = "none";
       if (confirmedWrapper) confirmedWrapper.style.display = "block";
 
+      // Normalize selected services
+      if (activeBooking.selectedServices) {
+        const liveServices = getAppServices();
+        activeBooking.selectedServices = activeBooking.selectedServices.map((s, idx) => {
+          if (typeof s === "string") {
+            const found = liveServices.find(ls => ls.name.toLowerCase() === s.toLowerCase());
+            return {
+              id: idx + 1,
+              name: s,
+              price: found ? found.price : Math.round(activeBooking.totalAmount / (activeBooking.selectedServices.length * Math.max(1, activeBooking.roomCount)))
+            };
+          } else if (typeof s === "object") {
+            const found = liveServices.find(ls => ls.name.toLowerCase() === (s.name || "").toLowerCase());
+            return {
+              id: s.id || (idx + 1),
+              name: s.name,
+              price: s.price || (found ? found.price : Math.round(activeBooking.totalAmount / (activeBooking.selectedServices.length * Math.max(1, activeBooking.roomCount))))
+            };
+          }
+          return s;
+        });
+      }
+
       // Populate confirmation details
-      const refId = activeBooking.bookingId || activeBooking.id || "SHC-2026-REF";
-      document.getElementById("confBookingId").textContent = refId;
-      document.getElementById("confCustomerName").textContent = activeBooking.customerName || "Customer";
+      document.getElementById("confBookingId").textContent = activeBooking.bookingId || activeBooking.id;
+      document.getElementById("confCustomerName").textContent = activeBooking.customerName;
       document.getElementById("confCustomerContact").innerHTML = `
-        <i class="fas fa-phone-alt" style="font-size:0.8rem;"></i> ${activeBooking.customerMobile || activeBooking.mobileNumber || "9876543210"}
+        <i class="fas fa-phone-alt" style="font-size:0.8rem;"></i> ${activeBooking.customerMobile || activeBooking.mobileNumber || "N/A"}
       `;
       document.getElementById("confCustomerAddress").innerHTML = `
-        <i class="fas fa-map-marker-alt" style="font-size:0.8rem; color:#0d9488;"></i> ${activeBooking.customerAddress || activeBooking.fullAddress || "Bengaluru, Karnataka"}
+        <i class="fas fa-map-marker-alt" style="font-size:0.8rem; color:var(--primary);"></i> ${activeBooking.customerAddress || activeBooking.fullAddress || "N/A"}
       `;
-      document.getElementById("confBookingDate").textContent = activeBooking.bookingDate || "2026-11-26";
-      document.getElementById("confBookingTime").textContent = activeBooking.bookingTime || "09:00 AM – 11:00 AM";
-      document.getElementById("confTeamPreference").textContent = `${activeBooking.teamPreference || activeBooking.cleaningTeamPreference || "Female"} Cleaner Staff`;
-      document.getElementById("confRoomCount").textContent = `${activeBooking.roomCount || 1} Room(s) (${activeBooking.roomSelectionType || "All Rooms"})`;
-      document.getElementById("confTotalAmount").textContent = formatINR(activeBooking.totalAmount || 1999);
-
-      // Normalize services list safely
-      let servicesList = [];
-      if (Array.isArray(activeBooking.selectedServices)) {
-        const count = activeBooking.roomCount || 1;
-        servicesList = activeBooking.selectedServices.map((s, idx) => {
-          if (typeof s === "string") {
-            const singlePrice = activeBooking.totalAmount ? Math.round(activeBooking.totalAmount / (activeBooking.selectedServices.length || 1) / count) : 800;
-            return { name: s, price: singlePrice };
-          } else if (typeof s === "object" && s !== null) {
-            const singlePrice = s.price || (activeBooking.totalAmount ? Math.round(activeBooking.totalAmount / (activeBooking.selectedServices.length || 1) / count) : 800);
-            return { name: s.name || s.serviceName || `Service #${idx + 1}`, price: singlePrice };
-          }
-          return { name: String(s), price: 0 };
-        });
-      } else if (typeof activeBooking.selectedServices === "string" && activeBooking.selectedServices.trim()) {
-        const parts = activeBooking.selectedServices.split(",").map(p => p.trim()).filter(Boolean);
-        const count = activeBooking.roomCount || 1;
-        const singlePrice = activeBooking.totalAmount ? Math.round(activeBooking.totalAmount / (parts.length || 1) / count) : 800;
-        servicesList = parts.map(p => ({
-          name: p,
-          price: singlePrice
-        }));
-      } else {
-        servicesList = [{ name: "Professional Home Cleaning Service", price: activeBooking.totalAmount || 1999 }];
-      }
+      document.getElementById("confBookingDate").textContent = activeBooking.bookingDate;
+      document.getElementById("confBookingTime").textContent = activeBooking.bookingTime;
+      document.getElementById("confTeamPreference").textContent = `${activeBooking.teamPreference || "Female"} Cleaner Staff`;
+      document.getElementById("confRoomCount").textContent = `${activeBooking.roomCount} Room(s) (${activeBooking.roomSelectionType || "All Rooms"})`;
+      document.getElementById("confTotalAmount").textContent = formatINR(activeBooking.totalAmount);
 
       // Populate Services Table
       const tbody = document.getElementById("confServicesTableBody");
-      if (tbody) {
-        const count = activeBooking.roomCount || 1;
-        tbody.innerHTML = servicesList.map(s => {
-          const itemTotal = (s.price || 0) * count;
-          return `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 0.75rem 1rem; color: #1e293b;">
-                <strong style="color: #0f172a;">${s.name}</strong>
-                <div style="font-size:0.8rem; color:#64748b;">Standard sanitization & deep cleaning package</div>
-              </td>
-              <td style="padding: 0.75rem 1rem; text-align:center; color: #1e293b;">${count}</td>
-              <td style="padding: 0.75rem 1rem; text-align:right; font-weight:600; color: #0d9488;">${formatINR(itemTotal || activeBooking.totalAmount || 0)}</td>
-            </tr>
-          `;
-        }).join("");
+      if (tbody && activeBooking.selectedServices) {
+        tbody.innerHTML = activeBooking.selectedServices.map(s => `
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem 1rem;">
+              <strong>${s.name}</strong>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Standard sanitization & deep cleaning package</div>
+            </td>
+            <td style="padding: 0.75rem 1rem; text-align:center;">${activeBooking.roomCount}</td>
+            <td style="padding: 0.75rem 1rem; text-align:right; font-weight:600;">${formatINR(s.price * activeBooking.roomCount)}</td>
+          </tr>
+        `).join("");
       }
 
       // Notes
-      const notesWrap = document.getElementById("confNotesWrapper");
-      const notesText = document.getElementById("confSpecialNotes");
-      if (activeBooking.specialInstructions && notesWrap && notesText) {
-        notesText.textContent = activeBooking.specialInstructions;
-        notesWrap.style.display = "block";
-      } else if (notesWrap) {
-        notesWrap.style.display = "none";
+      if (activeBooking.specialInstructions) {
+        const notesWrap = document.getElementById("confNotesWrapper");
+        const notesText = document.getElementById("confSpecialNotes");
+        if (notesWrap && notesText) {
+          notesText.textContent = activeBooking.specialInstructions;
+          notesWrap.style.display = "block";
+        }
       }
     }
 
@@ -437,7 +461,7 @@
       }
       const refEl = document.getElementById("modalBookingIdRef");
       if (refEl) {
-        refEl.textContent = activeBooking.bookingId || activeBooking.id || "SHC-2026-REF";
+        refEl.textContent = activeBooking.id || "SHC-2026-REF";
       }
       const modal = document.getElementById("downloadConfirmModal");
       if (modal) {
@@ -454,10 +478,7 @@
 
     function executeConfirmedDownload() {
       closeDownloadConfirmModal();
-      // Allow modal backdrop to transition out before capturing PDF canvas
-      setTimeout(() => {
-        downloadBookingPDF();
-      }, 250);
+      downloadBookingPDF();
     }
 
     // Close modal on Escape key or backdrop click
@@ -478,7 +499,7 @@
       }
     });
 
-    // Step 6: Direct, Clean PDF Generation (No negative z-index, zero blank pages)
+    // Step 6: Direct Element PDF Generation (Reliable, high-res, zero blank-page bug)
     function downloadBookingPDF() {
       if (!activeBooking) {
         showToast("No active booking to download.", "error");
@@ -497,12 +518,7 @@
         btn.disabled = true;
       }
 
-      const bookingRef = (activeBooking.bookingId || activeBooking.id || "Booking").replace(/[^a-zA-Z0-9-_]/g, "_");
-      const fileName = `SparkleHome_Receipt_${bookingRef}.pdf`;
-
-      // Temporarily scroll to top so html2canvas starts at origin without scroll clipping
-      const prevScrollY = window.scrollY;
-      window.scrollTo(0, 0);
+      const fileName = `SparkleHome_Receipt_${(activeBooking.id || activeBooking.bookingId || "Booking").replace(/\s+/g, "_")}.pdf`;
 
       const opt = {
         margin: [8, 8, 8, 8],
@@ -511,10 +527,10 @@
         html2canvas: {
           scale: 2,
           useCORS: true,
-          logging: false,
           scrollY: 0,
           scrollX: 0,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          logging: false
         },
         jsPDF: {
           unit: 'mm',
@@ -525,30 +541,21 @@
       };
 
       if (window.html2pdf) {
-        html2pdf()
-          .set(opt)
-          .from(element)
-          .save()
-          .then(() => {
-            window.scrollTo(0, prevScrollY);
-            showToast("Your receipt has been downloaded successfully.", "success");
-            if (btn) {
-              btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
-              btn.disabled = false;
-            }
-          })
-          .catch(err => {
-            console.error("html2pdf generation error:", err);
-            window.scrollTo(0, prevScrollY);
-            if (btn) {
-              btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
-              btn.disabled = false;
-            }
-            showToast("Opening print preview to save as PDF...", "info");
-            setTimeout(() => { window.print(); }, 400);
-          });
+        html2pdf().set(opt).from(element).save().then(() => {
+          showToast("Your receipt has been downloaded successfully.", "success");
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
+            btn.disabled = false;
+          }
+        }).catch(err => {
+          console.error("html2pdf error:", err);
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
+            btn.disabled = false;
+          }
+          window.print();
+        });
       } else {
-        window.scrollTo(0, prevScrollY);
         if (btn) {
           btn.innerHTML = '<i class="fas fa-file-pdf"></i> Download Booking';
           btn.disabled = false;

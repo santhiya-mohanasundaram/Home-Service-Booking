@@ -68,26 +68,6 @@ public class PriceService {
         return priceRepository.save(price);
     }
 
-    @Transactional
-    public ServicePrice updateBasePriceByServiceId(Long serviceId, Double newBasePrice) {
-        ServicePrice price = priceRepository.findByServiceId(serviceId)
-                .orElseGet(() -> {
-                    CleaningService service = serviceRepository.findById(serviceId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Service not found with ID: " + serviceId));
-                    return new ServicePrice(serviceId, service.getName(), newBasePrice, service.getPricePerUnit() != null ? service.getPricePerUnit() : 200.0, 0.05, "Standard base package");
-                });
-        price.setBasePrice(newBasePrice);
-        ServicePrice saved = priceRepository.save(price);
-
-        // Also update CleaningService base price
-        serviceRepository.findById(serviceId).ifPresent(cs -> {
-            cs.setBasePrice(newBasePrice);
-            serviceRepository.save(cs);
-        });
-
-        return saved;
-    }
-
     /**
      * Strict Requirement: Calculate booking totals on the backend using trusted database prices.
      * Never trust totals submitted by the frontend.
@@ -99,30 +79,24 @@ public class PriceService {
         }
 
         String[] serviceNames = selectedServicesStr.split(",");
-        double subtotal = 0.0;
-        double tax = 0.0;
+        double baseSum = 0.0;
+        int count = Math.max(1, roomCount);
 
         for (String rawName : serviceNames) {
             String name = rawName.trim();
             if (name.isEmpty()) continue;
 
-            Optional<ServicePrice> priceOpt = priceRepository.findByServiceNameIgnoreCase(name);
-            if (priceOpt.isPresent()) {
-                ServicePrice sp = priceOpt.get();
-                double serviceCost = sp.getBasePrice() + (sp.getPricePerRoom() * Math.max(0, roomCount - 1));
-                subtotal += serviceCost;
-                tax += (serviceCost * sp.getTaxRate());
+            Optional<CleaningService> serviceOpt = serviceRepository.findByNameIgnoreCase(name);
+            if (serviceOpt.isPresent()) {
+                baseSum += serviceOpt.get().getBasePrice();
             } else {
-                Optional<CleaningService> serviceOpt = serviceRepository.findByNameIgnoreCase(name);
-                if (serviceOpt.isPresent()) {
-                    CleaningService cs = serviceOpt.get();
-                    double serviceCost = cs.getBasePrice() + (cs.getPricePerUnit() * Math.max(0, roomCount - 1));
-                    subtotal += serviceCost;
-                    tax += (serviceCost * 0.05);
+                Optional<ServicePrice> priceOpt = priceRepository.findByServiceNameIgnoreCase(name);
+                if (priceOpt.isPresent()) {
+                    baseSum += priceOpt.get().getBasePrice();
                 }
             }
         }
 
-        return Math.round((subtotal + tax) * 100.0) / 100.0;
+        return Math.round(baseSum * count * 100.0) / 100.0;
     }
 }

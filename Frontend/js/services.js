@@ -17,8 +17,27 @@ async function renderServicesCatalog() {
   if (!container) return;
 
   let services = getAppServices();
-  if (typeof syncServicesWithBackend === "function") {
-    services = await syncServicesWithBackend();
+  try {
+    const res = await fetch("http://localhost:8080/api/services");
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.data && data.data.length > 0) {
+        services = data.data.map(s => {
+          const existing = (typeof DEFAULT_SERVICES !== "undefined" ? DEFAULT_SERVICES : []).find(d => d.name.toLowerCase() === s.name.toLowerCase()) || {};
+          return {
+            id: s.id,
+            name: s.name,
+            description: s.description || existing.description || "",
+            image: s.imageUrl || existing.image || "images/services/full-home.jpg",
+            price: Math.round(s.basePrice || existing.price || 999),
+            features: existing.features || ["Quality Sanitization", "Eco-friendly Cleaners", "Expert Equipment", "100% Satisfaction"]
+          };
+        });
+        localStorage.setItem("shc_services", JSON.stringify(services));
+      }
+    }
+  } catch (e) {
+    // Offline local fallback
   }
 
   container.innerHTML = services.map(service => `

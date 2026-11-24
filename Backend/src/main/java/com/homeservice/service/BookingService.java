@@ -139,6 +139,25 @@ public class BookingService {
     }
 
     /**
+     * Finds a single booking by alphanumeric reference ID or numeric ID.
+     */
+    @Transactional(readOnly = true)
+    public BookingResponse getBookingByRef(String ref, User currentUser) {
+        Booking booking = null;
+        try {
+            Long numId = Long.parseLong(ref);
+            booking = bookingRepository.findById(numId).orElse(null);
+        } catch (NumberFormatException ignored) {}
+
+        if (booking == null) {
+            booking = bookingRepository.findByBookingId(ref)
+                    .orElseThrow(() -> new ResourceNotFoundException("Booking not found with reference: " + ref));
+        }
+
+        return mapToResponse(booking);
+    }
+
+    /**
      * Updates an existing booking's date, time, rooms, or address.
      *
      * @param id booking ID

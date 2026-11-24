@@ -2,6 +2,7 @@ package com.homeservice.controller;
 
 import com.homeservice.dto.*;
 import com.homeservice.entity.BookingStatus;
+import com.homeservice.entity.CleaningService;
 import com.homeservice.entity.Destination;
 import com.homeservice.entity.Flight;
 import com.homeservice.entity.Hotel;
@@ -34,6 +35,7 @@ public class AdminController {
     private final HotelService hotelService;
     private final FlightService flightService;
     private final TravelPackageService packageService;
+    private final CleaningServiceService cleaningServiceService;
 
     public AdminController(DashboardService dashboardService,
                            BookingService bookingService,
@@ -41,7 +43,8 @@ public class AdminController {
                            DestinationService destinationService,
                            HotelService hotelService,
                            FlightService flightService,
-                           TravelPackageService packageService) {
+                           TravelPackageService packageService,
+                           CleaningServiceService cleaningServiceService) {
         this.dashboardService = dashboardService;
         this.bookingService = bookingService;
         this.userService = userService;
@@ -49,6 +52,7 @@ public class AdminController {
         this.hotelService = hotelService;
         this.flightService = flightService;
         this.packageService = packageService;
+        this.cleaningServiceService = cleaningServiceService;
     }
 
     /**
@@ -160,5 +164,17 @@ public class AdminController {
         BookingStatus status = request.getStatus();
         BookingResponse updatedBooking = bookingService.updateBookingStatusByRef(id, status);
         return ResponseEntity.ok(ApiResponse.success("Booking status updated to " + status, updatedBooking));
+    }
+
+    /**
+     * Updates service price globally in the database.
+     */
+    @PutMapping("/services/{id}/price")
+    public ResponseEntity<ApiResponse<CleaningService>> updateServicePrice(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload) {
+        Double newPrice = Double.parseDouble(payload.get("price").toString());
+        CleaningService updated = cleaningServiceService.updateServicePrice(id, newPrice);
+        return ResponseEntity.ok(ApiResponse.success("Service price updated successfully", updated));
     }
 }

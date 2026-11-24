@@ -20,16 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Initialize Dashboard components
     renderAdminStats();
     renderBookingsTable();
-    
-    // Sync live prices from backend then render
-    if (typeof syncServicesWithBackend === "function") {
-      syncServicesWithBackend().then(() => {
-        renderServicesPriceManager();
-      });
-    } else {
-      renderServicesPriceManager();
-    }
-
+    renderServicesPriceManager();
     renderContactMessagesTable();
 
     // Setup Admin search & filters
@@ -493,24 +484,22 @@ function closeAdminBookingModal() {
 }
 
 // 3. Manage Services & Prices
-function renderServicesPriceManager() {
+async function renderServicesPriceManager() {
   const container = document.getElementById("adminServicesManagerList");
   if (!container) return;
 
+  if (typeof syncLiveServices === "function") {
+    await syncLiveServices();
+  }
   const services = getAppServices();
 
-  container.innerHTML = services.map(s => {
-    const subtitle = (s.code && s.code !== "undefined")
-      ? (s.duration ? `${s.code} • ${s.duration}` : s.code)
-      : (s.duration || "Standard Professional Service");
-
-    return `
+  container.innerHTML = services.map(s => `
     <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; border-bottom:1px solid var(--border-color); flex-wrap:wrap; gap:1rem;">
       <div style="display:flex; align-items:center; gap:1rem;">
-        <img src="${s.image}" alt="${s.name}" style="width:50px; height:50px; border-radius:10px; object-fit:cover;">
+        <img src="${s.image}" style="width:50px; height:50px; border-radius:10px; object-fit:cover;">
         <div>
           <h4 style="font-size:1rem; margin-bottom:0.15rem;">${s.name}</h4>
-          <span style="font-size:0.8rem; color:var(--text-muted);">${subtitle}</span>
+          <span style="font-size:0.8rem; color:var(--text-muted);">${s.code}</span>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:0.75rem;">
@@ -518,19 +507,17 @@ function renderServicesPriceManager() {
           <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-weight:700; color:var(--text-muted);">₹</span>
           <input type="number" id="price-input-${s.id}" value="${s.price}" style="padding-left:1.6rem; width:100%; border:1px solid var(--border-color); border-radius:8px; padding-top:0.4rem; padding-bottom:0.4rem; font-weight:700;">
         </div>
-        <button class="btn btn-primary btn-sm" id="btn-save-service-${s.id}" onclick="handleSaveServicePrice(${s.id})">
+        <button class="btn btn-primary btn-sm" id="btn-save-price-${s.id}" onclick="handleSaveServicePrice(${s.id})">
           <i class="fas fa-save"></i> Save
         </button>
       </div>
     </div>
-  `;
-  }).join("");
+  `).join("");
 }
 
-// Save Updated Service Price Across Whole Website & Backend
+// Save Updated Service Price Globally across entire website
 async function handleSaveServicePrice(serviceId) {
   const input = document.getElementById(`price-input-${serviceId}`);
-  const saveBtn = document.getElementById(`btn-save-service-${serviceId}`);
   if (!input) return;
 
   const newPrice = parseInt(input.value, 10);
@@ -539,77 +526,45 @@ async function handleSaveServicePrice(serviceId) {
     return;
   }
 
-  if (saveBtn) {
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Saving...`;
+  const btn = document.getElementById(`btn-save-price-${serviceId}`) || (event && event.target ? event.target.closest("button") : null);
+  const originalText = btn ? btn.innerHTML : '<i class="fas fa-save"></i> Save';
+  if (btn) {
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
   }
 
-  // 1. Update in local storage immediately so client-side experiences no lag
+  // Update backend MySQL database
+  try {
+    const adminSession = getAdminSession();
+    const token = adminSession ? adminSession.token : null;
+    const res = await fetch(`http://localhost:8080/api/admin/services/${serviceId}/price`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { "Authorization": `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({ price: newPrice })
+    });
+
+    if (!res.ok) {
+      console.warn("Backend price update returned HTTP " + res.status);
+    }
+  } catch (err) {
+    console.warn("Backend price update network error:", err);
+  } finally {
+    if (btn) {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  // Update local storage services cache immediately
   const services = getAppServices();
   const target = services.find(s => s.id === serviceId);
   if (target) {
     target.price = newPrice;
     localStorage.setItem("shc_services", JSON.stringify(services));
-  }
-
-  // 2. Persist to Spring Boot Backend / MySQL Database
-  let adminSession = getAdminSession();
-  let token = adminSession && adminSession.token;
-
-  // Auto-acquire real backend JWT if token is missing or a mock token
-  if (!token || !token.startsWith("ey")) {
-    try {
-      const loginRes = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "admin@homeservice.com", password: "Admin@123" })
-      });
-      if (loginRes.ok) {
-        const loginData = await loginRes.json();
-        if (loginData && loginData.data && loginData.data.token) {
-          token = loginData.data.token;
-          if (adminSession) {
-            adminSession.token = token;
-            sessionStorage.setItem("shc_admin_session", JSON.stringify(adminSession));
-            localStorage.setItem("shc_admin_session", JSON.stringify(adminSession));
-          }
-        }
-      }
-    } catch (e) {
-      // Backend may be temporarily offline
-    }
-  }
-
-  try {
-    const headers = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-
-    const res = await fetch(`http://localhost:8080/api/services/${serviceId}/price`, {
-      method: "PUT",
-      headers: headers,
-      body: JSON.stringify({ price: newPrice, basePrice: newPrice })
-    });
-
-    if (res.ok) {
-      showToast(`Price for "${target ? target.name : 'Service'}" updated to ${formatINR(newPrice)} across database and entire website!`, "success");
-    } else {
-      // Also try prices endpoint
-      await fetch(`http://localhost:8080/api/prices/${serviceId}`, {
-        method: "PUT",
-        headers: headers,
-        body: JSON.stringify({ price: newPrice, basePrice: newPrice })
-      });
-      showToast(`Price for "${target ? target.name : 'Service'}" updated to ${formatINR(newPrice)} across website!`, "success");
-    }
-  } catch (err) {
-    showToast(`Price for "${target ? target.name : 'Service'}" saved locally to ${formatINR(newPrice)}!`, "success");
-  } finally {
-    if (saveBtn) {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = `<i class="fas fa-save"></i> Save`;
-    }
-    // Re-render price manager to refresh
-    renderServicesPriceManager();
+    showToast(`Price for "${target.name}" updated to ${formatINR(newPrice)}!`, "success");
   }
 }
 

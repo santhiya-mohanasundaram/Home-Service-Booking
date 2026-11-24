@@ -235,47 +235,37 @@ function initAppStorage() {
 function getAppServices() {
   initAppStorage();
   try {
-    const list = JSON.parse(localStorage.getItem("shc_services")) || DEFAULT_SERVICES;
-    // Ensure every service object has code and duration populated
-    return list.map(s => {
-      const def = DEFAULT_SERVICES.find(d => d.id === s.id || (d.name && s.name && d.name.toLowerCase() === s.name.toLowerCase())) || {};
-      return {
-        ...s,
-        code: (s.code && s.code !== "undefined") ? s.code : (def.code || (s.name ? s.name.split(" ")[0].toUpperCase() : "SERVICE")),
-        duration: (s.duration && s.duration !== "undefined") ? s.duration : (def.duration || "1.5 Hours")
-      };
-    });
+    return JSON.parse(localStorage.getItem("shc_services")) || DEFAULT_SERVICES;
   } catch (e) {
     return DEFAULT_SERVICES;
   }
 }
 
-// Fetch and synchronize services and prices with live Spring Boot MySQL backend
-async function syncServicesWithBackend() {
+// Synchronize live services and prices from MySQL backend
+async function syncLiveServices() {
   try {
     const res = await fetch("http://localhost:8080/api/services");
     if (res.ok) {
       const data = await res.json();
-      if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
-        const synced = data.data.map(s => {
-          const def = DEFAULT_SERVICES.find(d => d.id === s.id || (d.name && s.name && d.name.toLowerCase() === s.name.toLowerCase())) || {};
+      if (data && data.data && data.data.length > 0) {
+        const services = data.data.map(s => {
+          const existing = (typeof DEFAULT_SERVICES !== "undefined" ? DEFAULT_SERVICES : []).find(d => d.name.toLowerCase() === s.name.toLowerCase()) || {};
           return {
             id: s.id,
-            code: def.code || (s.name ? s.name.split(" ")[0].toUpperCase() : "SERVICE"),
+            code: existing.code || s.name.toUpperCase().replace(/\s+/g, "_"),
             name: s.name,
-            description: s.description || def.description || "",
-            image: s.imageUrl || def.image || "images/services/full-home.jpg",
-            price: Math.round(s.basePrice != null ? s.basePrice : (def.price || 999)),
-            duration: s.duration || def.duration || "1.5 Hours",
-            features: def.features || ["Quality Sanitization", "Eco-friendly Cleaners", "Expert Equipment", "100% Satisfaction"]
+            description: s.description || existing.description || "",
+            image: s.imageUrl || existing.image || "images/services/full-home.jpg",
+            price: Math.round(s.basePrice != null ? s.basePrice : (existing.price || 999)),
+            features: existing.features || ["Quality Sanitization", "Eco-friendly Cleaners", "Expert Equipment", "100% Satisfaction"]
           };
         });
-        localStorage.setItem("shc_services", JSON.stringify(synced));
-        return synced;
+        localStorage.setItem("shc_services", JSON.stringify(services));
+        return services;
       }
     }
   } catch (e) {
-    // Offline / fallback to local storage
+    // Backend offline; use local storage fallback
   }
   return getAppServices();
 }
@@ -443,6 +433,7 @@ function formatINR(amount) {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   initAppStorage();
+  syncLiveServices();
   if (typeof validateUserSession === "function") {
     validateUserSession();
   }

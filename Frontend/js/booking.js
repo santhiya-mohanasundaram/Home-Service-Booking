@@ -23,16 +23,9 @@ const bookingState = {
   specialInstructions: ""
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Step 1: Enforce User Login
   verifyUserAuthentication();
-
-  // Sync latest live prices from backend if available
-  if (typeof syncServicesWithBackend === "function") {
-    try {
-      await syncServicesWithBackend();
-    } catch (e) {}
-  }
 
   // Initialize Form Elements & Preloaded State
   initBookingForm();
@@ -354,10 +347,13 @@ function setupTeamSelector() {
 }
 
 // Render Services Multiple Selection
-function renderBookingServicesList() {
+async function renderBookingServicesList() {
   const container = document.getElementById("bookingServicesContainer");
   if (!container) return;
 
+  if (typeof syncLiveServices === "function") {
+    await syncLiveServices();
+  }
   const services = getAppServices();
 
   container.innerHTML = services.map(service => {
@@ -645,6 +641,9 @@ async function executeBookingConfirmation() {
       if (respData && respData.data) {
         newBooking.backendId = respData.data.id;
         newBooking.id = respData.data.bookingId || newBooking.id;
+        if (respData.data.totalAmount != null) {
+          newBooking.totalAmount = respData.data.totalAmount;
+        }
         newBooking.status = "Pending";
       }
     }
