@@ -23,9 +23,16 @@ const bookingState = {
   specialInstructions: ""
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // Step 1: Enforce User Login
   verifyUserAuthentication();
+
+  // Sync latest live prices from backend if available
+  if (typeof syncServicesWithBackend === "function") {
+    try {
+      await syncServicesWithBackend();
+    } catch (e) {}
+  }
 
   // Initialize Form Elements & Preloaded State
   initBookingForm();

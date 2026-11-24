@@ -68,6 +68,26 @@ public class PriceService {
         return priceRepository.save(price);
     }
 
+    @Transactional
+    public ServicePrice updateBasePriceByServiceId(Long serviceId, Double newBasePrice) {
+        ServicePrice price = priceRepository.findByServiceId(serviceId)
+                .orElseGet(() -> {
+                    CleaningService service = serviceRepository.findById(serviceId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Service not found with ID: " + serviceId));
+                    return new ServicePrice(serviceId, service.getName(), newBasePrice, service.getPricePerUnit() != null ? service.getPricePerUnit() : 200.0, 0.05, "Standard base package");
+                });
+        price.setBasePrice(newBasePrice);
+        ServicePrice saved = priceRepository.save(price);
+
+        // Also update CleaningService base price
+        serviceRepository.findById(serviceId).ifPresent(cs -> {
+            cs.setBasePrice(newBasePrice);
+            serviceRepository.save(cs);
+        });
+
+        return saved;
+    }
+
     /**
      * Strict Requirement: Calculate booking totals on the backend using trusted database prices.
      * Never trust totals submitted by the frontend.

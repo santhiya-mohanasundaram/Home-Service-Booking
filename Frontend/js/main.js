@@ -235,10 +235,49 @@ function initAppStorage() {
 function getAppServices() {
   initAppStorage();
   try {
-    return JSON.parse(localStorage.getItem("shc_services")) || DEFAULT_SERVICES;
+    const list = JSON.parse(localStorage.getItem("shc_services")) || DEFAULT_SERVICES;
+    // Ensure every service object has code and duration populated
+    return list.map(s => {
+      const def = DEFAULT_SERVICES.find(d => d.id === s.id || (d.name && s.name && d.name.toLowerCase() === s.name.toLowerCase())) || {};
+      return {
+        ...s,
+        code: (s.code && s.code !== "undefined") ? s.code : (def.code || (s.name ? s.name.split(" ")[0].toUpperCase() : "SERVICE")),
+        duration: (s.duration && s.duration !== "undefined") ? s.duration : (def.duration || "1.5 Hours")
+      };
+    });
   } catch (e) {
     return DEFAULT_SERVICES;
   }
+}
+
+// Fetch and synchronize services and prices with live Spring Boot MySQL backend
+async function syncServicesWithBackend() {
+  try {
+    const res = await fetch("http://localhost:8080/api/services");
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
+        const synced = data.data.map(s => {
+          const def = DEFAULT_SERVICES.find(d => d.id === s.id || (d.name && s.name && d.name.toLowerCase() === s.name.toLowerCase())) || {};
+          return {
+            id: s.id,
+            code: def.code || (s.name ? s.name.split(" ")[0].toUpperCase() : "SERVICE"),
+            name: s.name,
+            description: s.description || def.description || "",
+            image: s.imageUrl || def.image || "images/services/full-home.jpg",
+            price: Math.round(s.basePrice != null ? s.basePrice : (def.price || 999)),
+            duration: s.duration || def.duration || "1.5 Hours",
+            features: def.features || ["Quality Sanitization", "Eco-friendly Cleaners", "Expert Equipment", "100% Satisfaction"]
+          };
+        });
+        localStorage.setItem("shc_services", JSON.stringify(synced));
+        return synced;
+      }
+    }
+  } catch (e) {
+    // Offline / fallback to local storage
+  }
+  return getAppServices();
 }
 
 // Retrieve current logged in user (or null)
