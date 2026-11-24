@@ -6,8 +6,11 @@
 
 let selectedServiceIds = new Set();
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderServicesCatalog();
+document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof syncLiveServices === "function") {
+    await syncLiveServices();
+  }
+  await renderServicesCatalog();
   setupSelectionActions();
 });
 
@@ -136,6 +139,11 @@ function inspectServiceDetails(serviceId) {
     detailsTitle.textContent = service.name;
     detailsImage.src = service.image;
     detailsDesc.textContent = service.description;
+
+    const priceVal = document.getElementById("detailPriceVal");
+    if (priceVal && service.price) {
+      priceVal.textContent = formatINR(service.price);
+    }
     detailsFeatures.innerHTML = service.features.map(f => `
       <div style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0;">
         <i class="fas fa-sparkles" style="color:var(--primary);"></i>
