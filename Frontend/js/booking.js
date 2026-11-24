@@ -23,12 +23,12 @@ const bookingState = {
   specialInstructions: ""
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // Step 1: Enforce User Login
   verifyUserAuthentication();
 
   // Initialize Form Elements & Preloaded State
-  initBookingForm();
+  await initBookingForm();
 });
 
 // Step 1: Enforce Authentication Guard
@@ -44,9 +44,14 @@ function verifyUserAuthentication() {
 }
 
 // Initialize Booking Page UI
-function initBookingForm() {
+async function initBookingForm() {
   const currentUser = getCurrentUser();
   if (!currentUser) return;
+
+  // Always fetch latest database prices on load or refresh
+  if (typeof syncLiveServices === "function") {
+    await syncLiveServices();
+  }
 
   // Autofill customer details from logged in user
   const nameInput = document.getElementById("custFullName");
@@ -368,6 +373,8 @@ async function renderBookingServicesList() {
       </div>
     `;
   }).join("");
+
+  renderPriceSummary();
 }
 
 function toggleBookingService(serviceId) {
