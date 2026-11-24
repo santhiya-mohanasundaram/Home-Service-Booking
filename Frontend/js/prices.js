@@ -7,8 +7,11 @@
 let calcSelectedServices = new Set([1]); // default kitchen selected
 let calcRoomCount = 1;
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderPricingCards();
+document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof syncLiveServices === "function") {
+    await syncLiveServices();
+  }
+  await renderPricingCards();
   initPriceCalculator();
 });
 

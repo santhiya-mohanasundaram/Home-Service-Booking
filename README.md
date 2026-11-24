@@ -81,7 +81,31 @@ A modern, responsive, and accessible **Home Service Booking Web Application** bu
 
 ## 🚀 Getting Started
 
-1. Clone or download the repository.
-2. Open `Frontend/index.html` in any modern web browser or start a local server (e.g. VS Code Live Server or Python `http.server`).
-3. Demo Credentials:
-   * **Demo Customer**: `user@example.com` / `User@123`
+### 1. Backend Setup (Spring Boot 3.3.5 & MySQL)
+1. Ensure **JDK 21+** and **MySQL 8.0+** are installed.
+2. Configure database credentials in `Backend/.env` or `Backend/src/main/resources/application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/home_service_booking?createDatabaseIfNotExist=true
+   spring.datasource.username=root
+   spring.datasource.password=YourPassword
+   ```
+3. Navigate to the `Backend` directory and run:
+   ```bash
+   mvn clean spring-boot:run
+   ```
+4. The server starts at `http://localhost:8080` with Swagger UI at `http://localhost:8080/swagger-ui.html`.
+
+### 2. Frontend Access
+1. Open `Frontend/index.html` in any web browser or serve with Live Server.
+2. Demo Credentials:
+   * **Admin Portal**: `admin@homeservice.com` / `Admin@123`
+   * **Customer Account**: `user@example.com` / `User@123`
+
+---
+
+## 👥 Contributors & Collaboration
+
+* **Santhiya Mohanasundaram** - Full Stack & Git Repository Lead
+* **Dhanusri D** - Backend & Security Collaboration Lead
+
+Project organized across 32 modular feature branches and synchronized on GitHub.
